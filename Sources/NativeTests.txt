@@ -1,0 +1,156 @@
+import Foundation
+import simd
+import MetalKit
+@main struct NativeTests {
+ static func main()throws {
+  setvbuf(stdout,nil,_IONBF,0);var passed=0
+  func check(_ condition:Bool,_ name:String){if !condition{fatalError("FAIL: \(name)")};print("PASS: \(name)");passed+=1}
+  let p=perspective(.pi/3,1.6),near=p*SIMD4<Float>(0,0,-1,1),far=p*SIMD4<Float>(0,0,-100000,1)
+  check(abs(near.z/near.w-1)<0.000001 && far.z/far.w>0 && far.z/far.w<0.00002,"Reversed-Z near/far precision")
+  let g=FlightGame(testing:true);check(g.scenery==2 && g.preferredScenery==2,"Satellite is the first-launch default");g.terrain=try TerrainData(URL(fileURLWithPath:CommandLine.arguments[1]));g.ready=true;g.position=SIMD3(0,1000,0);g.previous=g.position;g.resume();g.key(125,down:true)
+  for _ in 0..<60{g.update(1/60)};check(g.position.y>1015,"Pull back climbs")
+  g.clearInput();g.key(124,down:true);let yaw=g.yaw;for _ in 0..<60{g.update(1/60)};check(g.yaw>yaw+0.1,"Right bank turns east")
+  g.pause();let saved=g.position;for _ in 0..<60{g.update(1/60)};check(g.position==saved && g.keys.isEmpty,"Pause freezes simulation and clears inputs")
+  g.showCredits=true;g.showPassport=true;g.resume();check(!g.showCredits && !g.showPassport,"Resume closes modal panels")
+  g.clearInput();g.position=SIMD3(0,1000,0);g.pitch=0;g.roll=0;g.shift=true;let boost=g.boost;for _ in 0..<120{g.update(1/60)};check(g.speed>Aero.cruise*1.4 && g.boost<boost,"Boost accelerates and drains charge")
+  g.shift=false;for _ in 0..<120{g.update(1/60)};check(g.boost>boost-0.24,"Boost recharges")
+  g.selectedChallenge=true;g.selectedRouteIndex=0;g.begin();check(g.challenge && g.routeIndex==0 && g.nextGate==0 && g.scenery==2,"Starting a challenge resets progress and keeps the chosen scenery")
+  let originalRoute=g.routeIndex;g.pause();g.selectedRouteIndex=2;g.resume();check(g.routeIndex==originalRoute,"Pending route selection does not alter resumed flight")
+  g.begin();check(g.routeIndex==2 && g.nextGate==0,"New flight commits selected route")
+  let gate=routes[2].gates[0];g.position=gate.position+SIMD3(0,0,15);g.pitch=0;g.yaw=0;g.clearInput();g.update(1/60);check(g.nextGate==1 && g.points==1000,"Passing a gate awards its score")
+  let second=routes[2].gates[1];g.position=second.position+SIMD3(0,900,400);g.update(1/60);check(g.nextGate==1,"A gate 400 m away is not collected")
+  g.position=second.position+SIMD3(0,900,100);g.update(1/60);check(g.nextGate==2 && g.points==2000,"A gate is collected within 140 m at any altitude")
+  g.routeFinished=true;g.points=5000;let elapsed=g.flightElapsed;g.position=SIMD3(0,1000,0);for _ in 0..<60{g.update(1/60)};check(g.flightElapsed==elapsed && g.points==5000,"Completed result stays fixed")
+  g.routeFinished=false;g.challenge=false;g.position=SIMD3(0,-50,0);g.update(1/60);check(g.position.y >= Aero.clearance && g.pitch>0 && !g.crashed,"Shallow surface contact skips back above the surface")
+  g.discovered=[];g.sessionFinds=0;g.activeDiscovery=nil;g.collect(0)
+  check(g.discovered==Set([0]) && g.activeDiscovery==0 && g.sessionFinds==1,"i point unlocks its story and passport stamp")
+  g.collect(0);check(g.sessionFinds==1,"Collected tiles cannot award duplicate finds")
+  g.pause();g.setCourse(4);check(g.trackedDiscovery==4 && !g.paused && !g.showPassport,"Passport sets a course and returns to flight")
+  g.activeDiscovery=nil;g.discovered=[];g.position=sights[16].position+SIMD3(0,0,60);g.pitch=0;g.yaw=0;g.challenge=false;g.clearInput();g.update(1/60)
+  check(g.discovered.contains(16) && g.activeDiscovery==16,"Flying into a visible i point collects it")
+  g.scenery=1;g.position=sights[22].position+SIMD3(0,700,60);g.previous=g.position;g.pitch=0;g.yaw=0;g.update(1/60)
+  check(g.discovered.contains(22),"Apple Maps collects nearby ground annotations at flight altitude")
+  check(g.discoveryDistance(sights[22])<140,"Apple course distance matches horizontal collection range")
+  check(discoverySites.count==24 && Set(discoverySites.map{$0.place.name}).count==24,"24 unique information points")
+  for site in discoverySites {check(!site.fact.isEmpty && !site.hint.isEmpty && URL(string:site.source) != nil,"Fact, hint and source: \(site.place.name)")}
+
+  g.chooseScenery(1);g.selectedChallenge=true;g.begin()
+  check(g.scenery==1 && g.preferredScenery==1,"A gate challenge flies in the chosen scenery")
+  g.chooseScenery(0);check(g.scenery==1,"The removed offline scenery cannot be selected");g.chooseScenery(2)
+  g.selectedChallenge=false;g.begin();check(g.scenery==2,"A scenery change applies to the next flight")
+  g.toggleMap();let mapPosition=g.position;for _ in 0..<60{g.update(1/60)}
+  check(g.showMap && g.paused && g.position==mapPosition,"Opening the map pauses the flight")
+  g.key(53,down:true);check(!g.showMap && !g.paused,"One Escape closes the map and resumes a flight")
+  g.pause();g.toggleMap();g.closeMap();check(g.paused && !g.showMap,"Closing a map opened from pause stays paused")
+  g.resume();g.photoMode=true;g.pause();check(!g.photoMode,"Pause restores hidden flight controls")
+  g.toggleMap();g.openPassport();check(g.showPassport && !g.showMap && !g.showHelp,"Passport replaces the map rather than stacking over it")
+  g.openHelp();check(g.showHelp && !g.showPassport,"Help replaces the passport")
+  g.openCredits();check(g.showCredits && !g.showHelp,"Credits replaces help")
+  g.resume();g.selectedChallenge=true;g.begin();g.setCourse(1)
+  check(!g.challenge && !g.selectedChallenge && g.scenery==2 && g.nearest==sights[1].name,"Discovery course leaves a gate challenge and updates the compass")
+  g.trackedDiscovery=4;g.forward=SIMD3(1,0,0);g.reset()
+  check(g.trackedDiscovery==nil && g.forward==SIMD3(0,0,-1),"Restart clears an old course and resets the camera direction")
+  let fresh=FlightGame(testing:true);fresh.ready=true;fresh.terrain=g.terrain;fresh.launchIndex=6;fresh.togglePause()
+  check(fresh.launched && !fresh.paused && distance(fresh.position,launches[6].position)<0.1,"First Fly button applies the chosen departure")
+  // Map camera: tilt is continuous in height and always within what MapKit honours.
+  var smooth=true,legal=true,previousTilt=MapCamera.tilt(height:0)
+  for h in stride(from:Float(0),through:3000,by:1) {let t=MapCamera.tilt(height:h);if abs(t-previousTilt)>0.5{smooth=false};previousTilt=t;if t>MapCamera.allowedTilt(distance:h/cos(t*Float.pi/180))+0.001{legal=false}}
+  check(smooth && legal && MapCamera.tilt(height:10)==70 && MapCamera.tilt(height:3000)==35,"Camera tilt changes smoothly with height and never exceeds MapKit's limits")
+  var rigid=true,centred=true,within=true,agree=true
+  let world=g.terrain!
+  for mode in 0...2 {for altitude:Float in [150,400,900,1600,2400] {for heading:Float in [0,1.3,-2.4] {
+   let p=SIMD3<Float>(-9000,altitude,-4000),c=solveMapCamera(position:p,yaw:heading,mode:mode,terrain:world)
+   let local=MapCamera.eye(mode,tilt:c.tilt),ahead=SIMD3<Float>(sin(heading),0,-cos(heading)),expected=p+SIMD3(0,local.y,0)-ahead*local.z
+   if distance(c.eye,expected)>0.01 || distance(c.local,local)>0.01{rigid=false}
+  }}}
+  check(rigid,"Clear of the ground, the camera keeps a fixed position relative to the aircraft at every altitude")
+  // Everywhere, including low passes, hillsides and rough ground (two positions that once broke the limits).
+  var places=[(SIMD3<Float>(-14370.875,488.3504,-17880.945),Float(-1.78323)),(SIMD3<Float>(-17152.2,138.7674,-20866.45),Float(1.4900038))]
+  for x in stride(from:Float(-21000),through:21000,by:3000){for z in stride(from:Float(-21000),through:21000,by:3000){for above:Float in [3,40,300,1200]{places.append((SIMD3(x,world.surface(SIMD3(x,0,z))+above,z),x*0.0007+z*0.0003))}}}
+  for (p,heading) in places {for mode in 0...2 {
+   let c=solveMapCamera(position:p,yaw:heading,mode:mode,terrain:world),ahead=SIMD3<Float>(sin(heading),0,-cos(heading))
+   if abs(c.centre.y-world.surface(c.centre))>2 || abs(distance(c.eye,c.centre)-c.distance)>0.5 || (c.distance>MapCamera.minimumDistance && c.eye.y<world.surface(c.eye)+1.9){centred=false}
+   if c.tilt>MapCamera.allowedTilt(distance:c.distance)+0.001 || c.distance<MapCamera.minimumDistance-0.01{within=false}
+   // The aircraft layer's camera is the map's camera: same position, same line of sight.
+   if distance(p+SIMD3(0,c.local.y,0)-ahead*c.local.z,c.eye)>0.05 || length(cross(normalize(c.centre-c.eye),ahead*sin(c.tilt*Float.pi/180)+SIMD3(0,-cos(c.tilt*Float.pi/180),0)))>0.001{agree=false}
+  }}
+  check(centred,"The map looks at the ground point on the camera's line of sight, and the camera stays above the terrain")
+  check(within,"The camera respects MapKit's tilt and minimum-distance limits over the whole map, at any height")
+  check(agree,"The map and the aircraft layer always share one camera position and line of sight")
+  let low=solveMapCamera(position:SIMD3(-9000,3,-4000),yaw:0,mode:0,terrain:world)
+  check(low.distance==MapCamera.minimumDistance && low.local.z>MapCamera.eye(0,tilt:70).z+20,"On a low pass the shared camera backs away to MapKit's minimum distance")
+  let wreck2=FlightGame(testing:true);wreck2.terrain=world;wreck2.crashTime=0;wreck2.crashVelocity=SIMD3(3,4,0);wreck2.publishHUD()
+  check(abs(length(wreck2.motion)-5)<0.001 && wreck2.speedReadout==Int(5*1.94384),"After a crash the readouts follow the wreck, not the speed at impact")
+  let device=MTLCreateSystemDefaultDevice()!,mesh=planeMesh(device),verts=mesh.buffer.contents().bindMemory(to:Float.self,capacity:mesh.count*12)
+  var framed=true
+  for mode in [0,1]{for tilt:Float in [35,60,70]{for aspect:Float in [900.0/620,1280.0/800,1265.0/1380]{for pitch:Float in [-1,-0.5,0,0.5,1]{for roll:Float in [-1.08,0,1.08]{
+   let transform=aircraftOverlayProjection(mode,aspect,tilt:tilt)*rotation(pitch,SIMD3(1,0,0))*rotation(-roll,SIMD3(0,0,1))
+   for i in 0..<mesh.count{let k=i*12,c=transform*SIMD4(verts[k],verts[k+1],verts[k+2],1);if c.w<=0 || abs(c.x/c.w)>0.97 || abs(c.y/c.w)>0.97 {framed=false}}
+  }}}}}
+  check(framed,"The whole aircraft stays in frame at full climb, dive and bank, at every camera tilt and window shape")
+  // Flight dynamics
+  let terrain=g.terrain!
+  func pilot(_ at:SIMD3<Float> = SIMD3(0,1200,0))->FlightGame {let f=FlightGame(testing:true);f.terrain=terrain;f.ready=true;f.resume();f.position=at;f.previous=at;return f}
+  func aim(_ f:FlightGame,yaw:Float,pitch:Float){f.yaw=yaw;f.pitch=pitch;f.forward=SIMD3(sin(yaw)*cos(pitch),sin(pitch),-cos(yaw)*cos(pitch));f.velocityDir=f.forward}
+  func run(_ f:FlightGame,_ seconds:Float,until done:()->Bool={false}){for _ in 0..<Int(seconds*60){f.update(1/60);if done(){return}}}
+  var f=pilot();f.key(126,down:true);run(f,3);check(f.speed>Aero.cruise+8,"A dive trades height for airspeed (\(Int(f.speed)) m/s)")
+  f=pilot();f.key(125,down:true);run(f,3);check(f.speed<Aero.cruise-8 && f.position.y>1300,"A climb trades airspeed for height (\(Int(f.speed)) m/s)")
+  f=pilot();run(f,6);check(abs(f.speed-Aero.cruise)<2 && abs(f.position.y-1200)<8,"Hands-off flight holds cruise speed and height")
+  f=pilot();f.key(124,down:true);run(f,2.5);let cruiseTurn=f.yaw
+  check(f.speed<Aero.cruise-1,"A banked turn bleeds airspeed")
+  f=pilot();f.key(49,down:true);run(f,5);check(abs(f.speed-Aero.brakeSpeed)<5,"The airbrake settles near its target speed (\(Int(f.speed)) m/s)");f.key(124,down:true);run(f,2.5)
+  check(f.yaw>cruiseTurn*1.25 && f.stallAmount<0.3,"Slow flight turns tighter than cruise without stalling")
+  f=pilot(SIMD3(0,Aero.ceiling,0));f.key(49,down:true);run(f,20);f.key(124,down:true);var thin:Float=0;run(f,20){thin=max(thin,f.stallAmount);return false}
+  check(thin<0.3 && f.position.y>Aero.ceiling-150,"A braked turn at the ceiling does not stall (\(thin))")
+  f=pilot();f.key(49,down:true);f.key(125,down:true);var peak:Float=0,stalled=false,dropped=false
+  run(f,12){peak=max(peak,f.pitch);if f.stallAmount>0.5{stalled=true};if stalled && f.pitch<peak-0.25{dropped=true};return dropped}
+  check(stalled && dropped,"Braking in a steep climb stalls and drops the nose")
+  f.clearInput();run(f,6);check(f.stallAmount<0.05 && f.speed>Aero.cruise*0.7,"Releasing the controls recovers from a stall")
+  // Crash dynamics
+  var land=SIMD3<Float>.zero,water=SIMD3<Float>.zero,foundLand=false,foundWater=false
+  for i in stride(from:-18000,through:18000,by:500){for j in stride(from:-18000,through:18000,by:500){let x=Float(i),z=Float(j)
+   let hs=[terrain.height(x,z),terrain.height(x+300,z),terrain.height(x-300,z),terrain.height(x,z+300),terrain.height(x,z-300),terrain.height(x,z-900),terrain.height(x,z-1800)]
+   if !foundLand && hs.min()!>3 && hs.max()!-hs.min()!<25 {land=SIMD3(x,0,z);foundLand=true}
+   if !foundWater && hs.max()!<=0.5 {water=SIMD3(x,0,z);foundWater=true}
+  }}
+  check(foundLand && foundWater,"Test terrain has flat land and open water")
+  let ground=terrain.surface(land)
+  f=pilot(land+SIMD3(0,ground+70,0));aim(f,yaw:0,pitch:-0.9);f.challenge=true;f.points=1000;run(f,3){f.crashed}
+  check(f.crashed && f.crashing && f.points==750 && f.impactFlash==1 && !f.particles.isEmpty,"A steep impact crashes, costs points and throws debris")
+  let wreck=f.position;f.key(125,down:true);f.key(124,down:true);var lowest=Float.infinity,spun=false,yawHeld=true
+  run(f,4){if f.crashed{lowest=min(lowest,f.position.y-terrain.surface(f.position)-f.wreckClearance)};if length(f.tumble)>1{spun=true};if f.crashed && f.yaw != 0{yawHeld=false};return !f.crashed}
+  check(spun && yawHeld && lowest > -0.05,"The wreck tumbles and bounces without any part sinking into the ground or answering the controls")
+  check(!f.crashed && !f.crashing && f.position.y>=terrain.surface(f.position)+129 && f.pitch>0 && hypot(f.position.x-wreck.x,f.position.z-wreck.z)<120,"The aircraft returns to the air above the crash site")
+  f.key(124,down:false);f.key(125,down:false);run(f,5);check(!f.crashed && f.position.y>terrain.surface(f.position)+60,"Flight continues safely after recovery")
+  f=pilot(land+SIMD3(0,ground+Aero.clearance+3,0));aim(f,yaw:0,pitch:-0.07);run(f,2){f.speed<Aero.cruise-2}
+  check(!f.crashed && f.speed<Aero.cruise-2 && f.pitch>0 && f.velocityDir.y>0 && !f.particles.isEmpty,"A shallow touch on land bounces back into the air")
+  // The same approach, steeper than land allows but within what the floats take on water.
+  f=pilot(land+SIMD3(0,ground+Aero.clearance+3,0));aim(f,yaw:0,pitch:-0.21);run(f,2){f.crashed || !f.particles.isEmpty};let onLand=f.crashed
+  f=pilot(water+SIMD3(0,Aero.clearance+3,0));aim(f,yaw:0,pitch:-0.21);run(f,2){f.crashed || !f.particles.isEmpty}
+  check(onLand && !f.crashed && f.velocityDir.y>0 && f.particles.contains{$0.kind==2},"The floats skip off the water with spray at an angle that crashes on land")
+  f=pilot(water+SIMD3(0,80,0));aim(f,yaw:0,pitch:-0.9);run(f,3){f.crashed};check(f.crashed && f.crashWater,"A steep dive into the bay is a splashdown")
+  f.reset();check(!f.crashed && !f.crashing && f.particles.isEmpty && f.tumble == .zero,"Restarting clears a crash in progress")
+  f=pilot(land+SIMD3(0,ground+40,0));aim(f,yaw:0,pitch:-1);f.speed=Aero.boostSpeed;f.thrust=Aero.boostThrust;for _ in 0..<40{f.update(0.05);if f.crashed{break}}
+  check(f.crashed && f.crashStart.y>=terrain.surface(f.crashStart)+Aero.clearance-0.05,"A boosted dive on a slow frame stops at the surface, not below it")
+  f=pilot();f.selectedChallenge=true;f.selectedRouteIndex=1;f.begin();var gateClock:Float=0
+  for (i,gate) in routes[1].gates.enumerated() {f.position=gate.position+SIMD3(0,300,60);f.previous=f.position;aim(f,yaw:0,pitch:0);f.update(1/60);if i==routes[1].gates.count-2{gateClock=f.flightElapsed}}
+  check(f.routeFinished && f.nextGate==routes[1].gates.count && f.points==1000*routes[1].gates.count && f.nextTarget==nil,"Passing the last gate completes the route with the full score")
+  let finished=f.flightElapsed;run(f,1);check(f.flightElapsed==finished && finished>gateClock,"The clock stops when the route is complete")
+  // Service ceiling
+  f=pilot(SIMD3(0,1700,0));f.key(125,down:true);f.shift=true;var top:Float=0,jerk:Float=0,last=f.pitch
+  run(f,90){top=max(top,f.position.y);jerk=max(jerk,abs(f.pitch-last));last=f.pitch;return false}
+  check(top>Aero.ceiling-150 && top<Aero.ceiling+40 && jerk<0.03 && f.stallAmount<0.1,"Holding a climb levels off smoothly at the service ceiling (\(Int(top)) m)")
+  f.publishHUD();check(f.atCeiling,"The ceiling is reported while still pulling up")
+  f.clearInput();f.key(126,down:true);run(f,6);check(f.position.y<top-150,"The aircraft descends normally from the ceiling")
+  let wing=pilot();wing.roll = .pi/2;check(abs(wing.wreckClearance-Airframe.halfSpan)<0.01 && pilot().wreckClearance==Aero.clearance,"A wreck on its wingtip needs half a wingspan of clearance")
+  let suite="local.bayday.tests."+UUID().uuidString,prefs=UserDefaults(suiteName:suite)!
+  defer{prefs.removePersistentDomain(forName:suite)}
+  let savedGame=FlightGame(preferences:prefs);savedGame.chooseScenery(1)
+  check(FlightGame(preferences:prefs).scenery==1,"Scenery choice survives a new app session")
+  savedGame.chooseScenery(2);savedGame.ready=true;savedGame.selectedChallenge=true;savedGame.begin()
+  check(FlightGame(preferences:prefs).scenery==2,"Starting a gate challenge does not change the saved scenery")
+  prefs.set(0,forKey:"BayDayNative.scenery");check(FlightGame(preferences:prefs).scenery==2,"A saved offline choice from an older version falls back to satellite")
+  prefs.set(9,forKey:"BayDayNative.scenery");check(FlightGame(preferences:prefs).scenery==2,"Invalid saved scenery falls back to satellite")
+  print("\(passed) native checks passed")
+ }
+}

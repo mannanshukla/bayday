@@ -1,0 +1,19 @@
+build/
+QA/
+QA-final/
+QA-satellite/
+.DS_Store
+# Data for the removed offline scenery: large, unused and not bundled.
+Resources/aerial/
+Resources/instances.bin
+Resources/building-chunks.json
+Resources/colliders.json
+Resources/landmarks.bin
+Resources/towers.bin
+Resources/region.jpg
+Resources/region-preview.jpg
+Resources/sf.jpg
+Resources/sf-preview.jpg
+Resources/world.json
+Resources/imagery-source.json
+scripts/fetch-imagery.py

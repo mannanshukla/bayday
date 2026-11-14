@@ -1,0 +1,104 @@
+import Foundation
+import simd
+let worldHalf:Float = 24640
+let worldSize:Float = 49280
+let metresLon:Float = 111320 * cos(37.76 * .pi / 180)
+func clamp<T:Comparable>(_ v:T,_ lo:T,_ hi:T)->T { min(hi,max(lo,v)) }
+func geographic(_ lat:Float,_ lon:Float)->SIMD3<Float> { SIMD3((lon + 122.38)*metresLon,0,-(lat-37.76)*110990) }
+func translation(_ p:SIMD3<Float>)->simd_float4x4 { var m=matrix_identity_float4x4;m.columns.3=SIMD4(p,1);return m }
+func rotation(_ angle:Float,_ axis:SIMD3<Float>)->simd_float4x4 { simd_float4x4(simd_quatf(angle:angle,axis:axis)) }
+func scaling(_ s:Float)->simd_float4x4 { simd_float4x4(diagonal:SIMD4(s,s,s,1)) }
+func lookAt(_ eye:SIMD3<Float>,_ target:SIMD3<Float>,up:SIMD3<Float> = SIMD3(0,1,0))->simd_float4x4 {
+ let z=normalize(eye-target),x=normalize(cross(up,z)),y=cross(z,x)
+ return simd_float4x4(SIMD4(x.x,y.x,z.x,0),SIMD4(x.y,y.y,z.y,0),SIMD4(x.z,y.z,z.z,0),SIMD4(-dot(x,eye),-dot(y,eye),-dot(z,eye),1))
+}
+// Infinite-far reversed Z: near maps to 1 and distant geometry approaches 0.
+// Paired with float depth, .greaterEqual, and a zero clear.
+func perspective(_ fov:Float,_ aspect:Float,_ near:Float=1)->simd_float4x4 {
+ let s=1/tan(fov/2)
+ return simd_float4x4(SIMD4(s/aspect,0,0,0),SIMD4(0,s,0,0),SIMD4(0,0,0,-1),SIMD4(0,0,near,0))
+}
+struct TerrainData {
+ var samples:[Int16]
+ init(_ url:URL)throws { let d=try Data(contentsOf:url);guard d.count==1025*1025*2 else{throw NSError(domain:"Terrain",code:1,userInfo:[NSLocalizedDescriptionKey:"Invalid terrain data"])};samples=d.withUnsafeBytes{Array($0.bindMemory(to:Int16.self))} }
+ func height(_ x:Float,_ z:Float)->Float {
+  let u=clamp((x+worldHalf)/worldSize*1024,0,1023.999),v=clamp((z+worldHalf)/worldSize*1024,0,1023.999),i=Int(u),j=Int(v),a=u-Float(i),b=v-Float(j),k=j*1025+i
+  return (Float(samples[k])*(1-a)*(1-b)+Float(samples[k+1])*a*(1-b)+Float(samples[k+1025])*(1-a)*b+Float(samples[k+1026])*a*b)*0.1
+ }
+ func surface(_ p:SIMD3<Float>)->Float {max(0,height(p.x,p.z))}
+}
+
+// MARK: Camera
+// The map camera is placed where a real chase (or cockpit) camera would be, so the aircraft
+// drawn over the map sits at its true position and height above the scenery.
+//
+// MapKit limits how far the camera may tilt from straight down, in steps by its distance to
+// the point it looks at (measured): 70° within 1 km, 60° within about 2 km, 35° beyond. A
+// step would make the view jump, so the tilt is chosen as a continuous function of the
+// camera's height that always stays inside those limits.
+enum MapCamera {
+ static let fieldOfView:Float = .pi/6          // MapKit's vertical field of view
+ static let nearLimit:Float=960,midLimit:Float=1850,minimumDistance:Float=114
+ static func tilt(height:Float)->Float {
+  let h=max(1,height),c70=cos(70*Float.pi/180),c60:Float=0.5,c35=cos(35*Float.pi/180)
+  if h<=nearLimit*c70 {return 70}
+  if h<nearLimit*c60 {return acos(h/nearLimit)*180/Float.pi}
+  if h<=midLimit*c60 {return 60}
+  if h<midLimit*c35 {return acos(h/midLimit)*180/Float.pi}
+  return 35
+ }
+ // The tilt MapKit will actually honour at a given distance.
+ static func allowedTilt(distance:Float)->Float {distance<=1000 ? 70:distance<=2000 ? 60:35}
+ // Camera position in the aircraft's heading frame (x right, y up, -z ahead) for a tilt in degrees.
+ // Modes: 0 chase, 1 far chase, 2 cockpit (the pilot's eye).
+ static func eye(_ mode:Int,tilt:Float)->SIMD3<Float> {
+  if mode==2 {return SIMD3(0,0.8,-0.9)}
+  // Behind the aircraft along the line of sight, raised a little in the camera's own up
+  // direction so the aircraft sits just below the centre of the view at every tilt.
+  let r=tilt*Float.pi/180,distance:Float=mode==1 ? 95:46,raise:Float=mode==1 ? 5:2.5
+  return SIMD3(0,cos(r),sin(r))*distance+SIMD3(0,sin(r),-cos(r))*raise
+ }
+ static func view(tilt:Float)->SIMD3<Float> {let r=tilt*Float.pi/180;return SIMD3(0,-cos(r),-sin(r))}
+}
+// Projection for the aircraft layer from a camera position in the aircraft's heading frame.
+func aircraftOverlayProjection(eye:SIMD3<Float>,tilt:Float,_ aspect:Float)->simd_float4x4 {
+ perspective(MapCamera.fieldOfView,aspect,0.5)*lookAt(eye,eye+MapCamera.view(tilt:tilt))
+}
+func aircraftOverlayProjection(_ mode:Int,_ aspect:Float,tilt:Float=70)->simd_float4x4 {aircraftOverlayProjection(eye:MapCamera.eye(mode,tilt:tilt),tilt:tilt,aspect)}
+// MapKit cannot roll or look above its tilt limit. In the cockpit the map picture itself is
+// turned against the bank and slid down as the nose rises, with sky behind it, so its far
+// edge reads as the horizon. Returns the rotation (radians, counter-clockwise), the downward
+// slide as a fraction of the view height, and the scale that keeps the corners covered.
+func cockpitHorizon(roll:Float,pitch:Float,aspect:Float)->(angle:Float,slide:Float,cover:Float) {
+ let angle=roll*0.6,slide=0.2+clamp(pitch,-0.5,1)*0.3
+ return (angle,slide,cos(abs(angle))+max(aspect,1/aspect)*sin(abs(angle)))
+}
+// One camera for both layers. `eye` is where the camera really is after every adjustment,
+// and `local` is that position in the aircraft's heading frame; the map and the aircraft
+// layer are both drawn from it, so they cannot disagree.
+struct CameraSolution {var eye:SIMD3<Float>,local:SIMD3<Float>,centre:SIMD3<Float>,distance:Float,tilt:Float}
+// Where the view ray from the camera meets the ground: the point MapKit is asked to look at.
+func solveMapCamera(position:SIMD3<Float>,yaw:Float,mode:Int,terrain:TerrainData)->CameraSolution {
+ let ahead=SIMD3<Float>(sin(yaw),0,-cos(yaw))
+ func solve(_ tilt:Float)->CameraSolution {
+  let nominal=MapCamera.eye(mode,tilt:tilt),r=tilt*Float.pi/180
+  var eye=position+SIMD3(0,nominal.y,0)-ahead*nominal.z
+  eye.y=max(eye.y,terrain.surface(eye)+2)                // never inside a hillside behind the aircraft
+  let ray=ahead*sin(r)+SIMD3(0,-cos(r),0)
+  var near:Float=0,far:Float=0
+  while far<20000 {far += 40;let q=eye+ray*far;if q.y<=terrain.surface(q){break};near=far}
+  for _ in 0..<10 {let mid=(near+far)/2,q=eye+ray*mid;if q.y<=terrain.surface(q){far=mid}else{near=mid}}
+  let centre=eye+ray*far
+  // MapKit will not come closer than its minimum distance: back the camera up along its line of sight.
+  if far<MapCamera.minimumDistance {far=MapCamera.minimumDistance;eye=centre-ray*far}
+  let offset=eye-position
+  return CameraSolution(eye:eye,local:SIMD3(0,offset.y,-dot(offset,ahead)),centre:centre,distance:far,tilt:tilt)
+ }
+ // The tilt depends on the camera's height over the ground it looks at, which depends on the tilt.
+ var s=solve(70)
+ for _ in 0..<3 {s=solve(MapCamera.tilt(height:s.eye.y-s.centre.y))}
+ // Over uneven ground that may not settle. A steeper tilt is always acceptable to MapKit, so
+ // step down until the solved distance allows the tilt.
+ for limit:Float in [60,35] where s.tilt>MapCamera.allowedTilt(distance:s.distance*1.03) {s=solve(min(s.tilt,limit))}
+ return s
+}
