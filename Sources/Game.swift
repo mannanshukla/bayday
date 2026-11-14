@@ -115,6 +115,8 @@ class FlightGame:ObservableObject {
  @Published var crashed=false
  @Published var stalling=false
  @Published var atCeiling=false
+ @Published var place=PlaceLabel()
+ lazy var locator=PlaceLocator(store:preferences)
  @Published var impactFlash=0
  init(preferences:UserDefaults = .standard,testing:Bool=CommandLine.arguments.contains("--qa")) {
   self.preferences=preferences;isTesting=testing
@@ -202,7 +204,16 @@ class FlightGame:ObservableObject {
   publishTimer += dt
   if publishTimer>0.1 {publishTimer=0;publishHUD()}
  }
+ // The label for the ground below. Water is decided from the elevation grid every time, so
+ // the name changes as soon as the aircraft crosses the shore.
+ func refreshPlace(){
+  guard !isTesting,let terrain else{return}
+  locator.update(position:position,now:CFAbsoluteTimeGetCurrent()){[weak self] in self?.refreshPlace()}
+  let label=locator.label(position:position,overWater:terrain.height(position.x,position.z)<=0.5)
+  if label != place{place=label}
+ }
  func publishHUD(){
+   refreshPlace()
    elapsed=flightElapsed;speedReadout=Int(length(motion)*1.94384);altitude=Int(position.y*3.28084);height=Int(max(0,position.y-Aero.clearance-(terrain?.surface(position) ?? 0))*3.28084);heading=(Int(yaw*180/Float.pi)%360+360)%360;boostReadout=boost;if stalling != (stallAmount>0.35){stalling=stallAmount>0.35};let high=position.y>Aero.ceiling-200 && pitchInput>0.3;if atCeiling != high{atCeiling=high}
    if let p=nextTarget{nearest=p.name;let delta=p.position-position;distanceText=rangeLabel(hypot(delta.x,delta.z));courseBearing=atan2(delta.x,-delta.z)-yaw}
    else if let i=targetDiscovery {let p=sights[i];nearest=p.name;distanceText=rangeLabel(discoveryDistance(p));let d=p.position-position;courseBearing=atan2(d.x,-d.z)-yaw}else{nearest="All points found";distanceText="";courseBearing=0}

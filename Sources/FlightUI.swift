@@ -61,7 +61,7 @@ struct FlightView:View {
  // MARK: In-flight HUD
  private func hud(_ size:CGSize)->some View {
   VStack(spacing:10) {
-   HStack(alignment:.top) {progressChip;Spacer();targetChip}.allowsHitTesting(false)
+   HStack(alignment:.top) {progressChip;Spacer(minLength:8);placeChip;Spacer(minLength:8);targetChip}.allowsHitTesting(false)
    status.allowsHitTesting(false)
    Spacer(minLength:0)
    if let i=game.activeDiscovery {
@@ -81,6 +81,20 @@ struct FlightView:View {
   .animation(.snappy(duration:0.25),value:game.stalling)
   .animation(.snappy(duration:0.25),value:game.atCeiling)
   .animation(.snappy(duration:0.25),value:game.toast)
+  .animation(.easeInOut(duration:0.3),value:game.place)
+ }
+ // The neighbourhood, town or water below the aircraft.
+ @ViewBuilder private var placeChip:some View {
+  if !game.place.name.isEmpty {
+   HStack(spacing:8) {
+    Image(systemName:"mappin.and.ellipse").font(.system(size:13,weight:.semibold)).foregroundStyle(aeroBlue)
+    VStack(alignment:.leading,spacing:1) {
+     Text(game.place.name).font(.system(size:14,weight:.semibold)).lineLimit(1)
+     if !game.place.detail.isEmpty {Text(game.place.detail).font(.system(size:11,weight:.medium)).foregroundStyle(.secondary).lineLimit(1)}
+    }
+   }.padding(.horizontal,14).padding(.vertical,8).aeroCapsule().transition(.opacity)
+   .accessibilityElement(children:.combine).accessibilityLabel("Flying over \(game.place.name)")
+  }
  }
  private var progressChip:some View {
   HStack(spacing:10) {

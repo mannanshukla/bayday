@@ -10,6 +10,7 @@ Open **build/Bay Day.app**, choose a start, and press **Start flight** (or Retur
 
 - **Satellite** uses Apple's photographic Flyover imagery; **Apple Maps 3D** uses Apple's city models. T switches between them, and the choice is saved.
 - **Explore**: pass within 140 m of a blue marker, at any altitude, to collect it. The flight record (J) lists every point, its fact and source, and can set a course to one you have not found.
+- A label at the top of the screen names what is below: the neighbourhood, a named place or town, or the water (`Sources/Place.swift`, from Apple's reverse geocoder). Answers are cached per 300 m square and saved, and new ground is asked about at most once every three seconds.
 - **Gate challenge**: three routes, 21 gates. Gates are numbered markers on the map; pass within 140 m of the next one. Each gate is worth 1,000 points; a bounce costs 50 and a crash 250.
 
 | Action | Keys |
@@ -55,7 +56,7 @@ Swift, AppKit, SwiftUI, MetalKit, MapKit, AVFoundation and GameController. Apple
 ./build/Bay\ Day.app/Contents/MacOS/BayDay --qa "$PWD/build/qa"
 ```
 
-`build.sh` builds and ad-hoc signs the app. `test.sh` runs 101 checks of the flight model, crashes, the ceiling, the camera, gates, collection, pause and map transitions, saved settings and aircraft framing; test runs never touch saved progress. `--qa` saves transparent PNGs of the aircraft (four flight attitudes and a close-up) and quits. `swift scripts/make-icon.swift <aircraft-hero.png> Resources`, followed by `iconutil -c icns Resources/AppIcon.iconset -o Resources/AppIcon.icns`, rebuilds the app icon from that close-up.
+`build.sh` builds and ad-hoc signs the app. `test.sh` runs 115 checks of the flight model, crashes, the ceiling, the camera, gates, collection, pause and map transitions, saved settings and aircraft framing; test runs never touch saved progress. `--qa` saves transparent PNGs of the aircraft (four flight attitudes and a close-up) and quits. `swift scripts/make-icon.swift <aircraft-hero.png> Resources`, followed by `iconutil -c icns Resources/AppIcon.iconset -o Resources/AppIcon.icns`, rebuilds the app icon from that close-up.
 
 `--fly <camera> <turn> <climb> <start>` starts a flight immediately with a steady control input, for checking a view without the keyboard (for example `--fly 2 0.4 0 1` for the cockpit in a right turn over downtown).
 
