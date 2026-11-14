@@ -79,12 +79,17 @@ struct AppleScenery:NSViewRepresentable {
 extension FlightGame {
  func updateAppleCamera(){
   guard let map=appleMap,let terrain else{return}
-  let now=CFAbsoluteTimeGetCurrent()
-  guard now>=mapCameraTime else{return}
   let changed=simd_distance(position,mapCameraPosition)>0.05 || abs(yaw-mapCameraYaw)>0.0001 || abs(pitch-mapCameraPitch)>0.0001 || abs(roll-mapCameraRoll)>0.0001 || cameraMode != mapCameraMode || scenery != mapSceneryMode || map.bounds.size != mapCameraSize
   guard changed else{return}
-  mapCameraTime=now+1.0/65.0;mapCameraPosition=position;mapCameraYaw=yaw;mapCameraPitch=pitch;mapCameraRoll=roll;mapCameraMode=cameraMode;mapSceneryMode=scenery;mapCameraSize=map.bounds.size
-  let s=solveMapCamera(position:position,yaw:yaw,mode:cameraMode,terrain:terrain)
+  // A new flight, a recovery, a camera switch or a long gap takes the solved camera at once.
+  let now=CFAbsoluteTimeGetCurrent(),elapsed=Float(now-mapCameraClock),fresh=mapCameraPosition.x.isInfinite || cameraMode != mapCameraMode || elapsed>0.25
+  // Runs once per drawn frame, so the map and the aircraft layer always move together.
+  mapCameraClock=now;mapCameraPosition=position;mapCameraYaw=yaw;mapCameraPitch=pitch;mapCameraRoll=roll;mapCameraMode=cameraMode;mapSceneryMode=scenery;mapCameraSize=map.bounds.size
+  var s=solveMapCamera(position:position,yaw:yaw,mode:cameraMode,terrain:terrain)
+  if !fresh && abs(s.tilt-cameraTilt)>0.05 {
+   let eased=cameraSolution(position:position,yaw:yaw,mode:cameraMode,terrain:terrain,tilt:easedTilt(current:cameraTilt,target:s.tilt,elapsed:elapsed))
+   if eased.usable(terrain) {s=eased}
+  }
   cameraTilt=s.tilt;cameraEye=s.local
   let coord=CLLocationCoordinate2D(latitude:37.76-Double(s.centre.z)/110990,longitude:-122.38+Double(s.centre.x/metresLon))
   map.setCamera(MKMapCamera(lookingAtCenter:coord,fromDistance:Double(s.distance),pitch:Double(s.tilt),heading:Double(yaw)*180/Double.pi),animated:false)

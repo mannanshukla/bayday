@@ -37,7 +37,7 @@ MapKit renders the scenery. A transparent Metal layer above it draws the aircraf
 
 The map camera is placed where a real chase camera would be: 46 m behind the aircraft (95 m in the far view) along the line of sight, looking at the ground point on that line. The Metal layer uses the same position and MapKit's 30° field of view, so the aircraft appears at its true position and height over the scenery. Where the camera has to move (MapKit will not come closer than about 114 m to the point it looks at, and the camera is kept out of hillsides), one solved position is used for both layers. The speed, altitude and height-above-ground readouts are the simulation's own values.
 
-MapKit limits how far its camera may tilt from straight down, in steps by distance to the point it looks at: 70° within 1 km, 60° within about 2 km, 35° beyond (measured). A step would make the view jump, so the tilt is a continuous function of camera height that stays inside those limits (`MapCamera.tilt`). The consequence is that the view looks more steeply down the higher you fly, and the horizon is never in a chase view.
+MapKit limits how far its camera may tilt from straight down, in steps by distance to the point it looks at: 70° within 1 km, 60° within about 2 km, 35° beyond (measured). A step would make the view jump, so the tilt is a continuous function of camera height that stays inside those limits (`MapCamera.tilt`). The consequence is that the view looks more steeply down the higher you fly, and the horizon is never in a chase view. Over rough ground the solved tilt can change abruptly, so the tilt in use glides toward it at 30° per second.
 
 The cockpit view puts the camera at the pilot's eye. MapKit cannot roll or look up, so the map picture itself is rotated against the bank and slid down as the nose rises, with a sky behind it; its far edge reads as the horizon. The panel (`Sources/Cockpit.swift`) has working airspeed, attitude, altimeter, compass and climb instruments.
 
@@ -55,7 +55,7 @@ Swift, AppKit, SwiftUI, MetalKit, MapKit, AVFoundation and GameController. Apple
 ./build/Bay\ Day.app/Contents/MacOS/BayDay --qa "$PWD/build/qa"
 ```
 
-`build.sh` builds and ad-hoc signs the app. `test.sh` runs 97 checks of the flight model, crashes, the ceiling, the camera, gates, collection, pause and map transitions, saved settings and aircraft framing; test runs never touch saved progress. `--qa` saves transparent PNGs of the aircraft (four flight attitudes and a close-up) and quits. `swift scripts/make-icon.swift <aircraft-hero.png> Resources`, followed by `iconutil -c icns Resources/AppIcon.iconset -o Resources/AppIcon.icns`, rebuilds the app icon from that close-up.
+`build.sh` builds and ad-hoc signs the app. `test.sh` runs 101 checks of the flight model, crashes, the ceiling, the camera, gates, collection, pause and map transitions, saved settings and aircraft framing; test runs never touch saved progress. `--qa` saves transparent PNGs of the aircraft (four flight attitudes and a close-up) and quits. `swift scripts/make-icon.swift <aircraft-hero.png> Resources`, followed by `iconutil -c icns Resources/AppIcon.iconset -o Resources/AppIcon.icns`, rebuilds the app icon from that close-up.
 
 `--fly <camera> <turn> <climb> <start>` starts a flight immediately with a steady control input, for checking a view without the keyboard (for example `--fly 2 0.4 0 1` for the cockpit in a right turn over downtown).
 

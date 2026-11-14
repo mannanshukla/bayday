@@ -60,7 +60,7 @@ class FlightGame:ObservableObject {
  private var mapReturnToFlight=false
  var mapReturnsToFlight:Bool{mapReturnToFlight}
  weak var appleMap:MKMapView?
- var mapCameraTime:Double=0,mapCameraPosition=SIMD3<Float>(repeating:.infinity)
+ var mapCameraPosition=SIMD3<Float>(repeating:.infinity)
  var mapCameraYaw:Float=0,mapCameraPitch:Float=0,mapCameraRoll:Float=0,mapCameraMode = -1,mapSceneryMode = -1
  @Published var discovered=Set<Int>()
  @Published var activeDiscovery:Int?=nil
@@ -100,7 +100,7 @@ class FlightGame:ObservableObject {
  @Published var cameraMode=0
  var keys=Set<UInt16>(),shift=false
  // Current camera, shared by the map and the aircraft layer (see solveMapCamera).
- var cameraTilt:Float=70,cameraEye=MapCamera.eye(0,tilt:70),mapCameraSize=CGSize.zero
+ var cameraTilt:Float=70,cameraEye=MapCamera.eye(0,tilt:70),mapCameraSize=CGSize.zero,mapCameraClock:Double=0
  var demoInput=SIMD2<Float>.zero           // steady test input from --fly
  var turnInput:Float=0,pitchInput:Float=0
  var flightElapsed:Float=0

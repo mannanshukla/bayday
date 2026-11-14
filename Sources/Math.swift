@@ -76,29 +76,55 @@ func cockpitHorizon(roll:Float,pitch:Float,aspect:Float)->(angle:Float,slide:Flo
 // One camera for both layers. `eye` is where the camera really is after every adjustment,
 // and `local` is that position in the aircraft's heading frame; the map and the aircraft
 // layer are both drawn from it, so they cannot disagree.
+// The cockpit's screen-space turn and slide of the map (cockpitHorizon), as a transform of
+// clip space, so effects drawn by the aircraft layer stay registered with the scenery.
+func cockpitClipTransform(roll:Float,pitch:Float,aspect:Float)->simd_float4x4 {
+ let h=cockpitHorizon(roll:roll,pitch:pitch,aspect:aspect)
+ let stretch=simd_float4x4(diagonal:SIMD4(aspect,1,1,1)),squeeze=simd_float4x4(diagonal:SIMD4(1/aspect,1,1,1)),cover=simd_float4x4(diagonal:SIMD4(h.cover,h.cover,1,1))
+ return translation(SIMD3(0,-2*h.slide,0))*squeeze*rotation(h.angle,SIMD3(0,0,1))*stretch*cover
+}
 struct CameraSolution {var eye:SIMD3<Float>,local:SIMD3<Float>,centre:SIMD3<Float>,distance:Float,tilt:Float}
-// Where the view ray from the camera meets the ground: the point MapKit is asked to look at.
-func solveMapCamera(position:SIMD3<Float>,yaw:Float,mode:Int,terrain:TerrainData)->CameraSolution {
+extension CameraSolution {
+ // Acceptable to MapKit at its solved distance, and clear of the terrain.
+ func usable(_ terrain:TerrainData)->Bool {tilt<=MapCamera.allowedTilt(distance:distance) && eye.y>=terrain.surface(eye)+2}
+}
+// The camera for one given tilt: where it is, and the ground point on its line of sight
+// that MapKit is asked to look at.
+func cameraSolution(position:SIMD3<Float>,yaw:Float,mode:Int,terrain:TerrainData,tilt:Float)->CameraSolution {
  let ahead=SIMD3<Float>(sin(yaw),0,-cos(yaw))
- func solve(_ tilt:Float)->CameraSolution {
-  let nominal=MapCamera.eye(mode,tilt:tilt),r=tilt*Float.pi/180
-  var eye=position+SIMD3(0,nominal.y,0)-ahead*nominal.z
-  eye.y=max(eye.y,terrain.surface(eye)+2)                // never inside a hillside behind the aircraft
-  let ray=ahead*sin(r)+SIMD3(0,-cos(r),0)
-  var near:Float=0,far:Float=0
-  while far<20000 {far += 40;let q=eye+ray*far;if q.y<=terrain.surface(q){break};near=far}
-  for _ in 0..<10 {let mid=(near+far)/2,q=eye+ray*mid;if q.y<=terrain.surface(q){far=mid}else{near=mid}}
-  let centre=eye+ray*far
-  // MapKit will not come closer than its minimum distance: back the camera up along its line of sight.
-  if far<MapCamera.minimumDistance {far=MapCamera.minimumDistance;eye=centre-ray*far}
-  let offset=eye-position
-  return CameraSolution(eye:eye,local:SIMD3(0,offset.y,-dot(offset,ahead)),centre:centre,distance:far,tilt:tilt)
+ let nominal=MapCamera.eye(mode,tilt:tilt),r=tilt*Float.pi/180
+ var eye=position+SIMD3(0,nominal.y,0)-ahead*nominal.z
+ eye.y=max(eye.y,terrain.surface(eye)+2)                // never inside a hillside behind the aircraft
+ let ray=ahead*sin(r)+SIMD3(0,-cos(r),0)
+ var near:Float=0,far:Float=0
+ while far<20000 {far += 40;let q=eye+ray*far;if q.y<=terrain.surface(q){break};near=far}
+ for _ in 0..<10 {let mid=(near+far)/2,q=eye+ray*mid;if q.y<=terrain.surface(q){far=mid}else{near=mid}}
+ let centre=eye+ray*far
+ // MapKit will not come closer than its minimum distance: back the camera up along its line of sight.
+ if far<MapCamera.minimumDistance {far=MapCamera.minimumDistance;eye=centre-ray*far}
+ let offset=eye-position
+ return CameraSolution(eye:eye,local:SIMD3(0,offset.y,-dot(offset,ahead)),centre:centre,distance:far,tilt:tilt)
+}
+// The tilt actually used glides toward the solved one. Rough ground can move the solved
+// tilt abruptly from one metre to the next; easing turns that into a short, smooth change.
+func easedTilt(current:Float,target:Float,elapsed:Float)->Float {current+clamp(target-current,-30*elapsed,30*elapsed)}
+// The preferred camera for the aircraft's position: the shallowest tilt MapKit allows.
+func solveMapCamera(position:SIMD3<Float>,yaw:Float,mode:Int,terrain:TerrainData)->CameraSolution {
+ func solve(_ tilt:Float)->CameraSolution {cameraSolution(position:position,yaw:yaw,mode:mode,terrain:terrain,tilt:tilt)}
+ // Use the shallowest tilt MapKit will honour at the distance that tilt produces. A steeper
+ // tilt always shortens the distance, so each band is searched for the point where the
+ // distance reaches its limit; the result changes smoothly as the aircraft climbs.
+ func settle(from steep:Float,to shallow:Float,limit:Float)->CameraSolution? {
+  var best=solve(steep)
+  guard best.distance<=limit else{return nil}
+  let top=solve(shallow)
+  if top.distance<=limit {return top}
+  var lo=steep,hi=shallow
+  for _ in 0..<9 {let mid=(lo+hi)/2,m=solve(mid);if m.distance<=limit{lo=mid;best=m}else{hi=mid}}
+  return best
  }
- // The tilt depends on the camera's height over the ground it looks at, which depends on the tilt.
- var s=solve(70)
- for _ in 0..<3 {s=solve(MapCamera.tilt(height:s.eye.y-s.centre.y))}
- // Over uneven ground that may not settle. A steeper tilt is always acceptable to MapKit, so
- // step down until the solved distance allows the tilt.
- for limit:Float in [60,35] where s.tilt>MapCamera.allowedTilt(distance:s.distance*1.03) {s=solve(min(s.tilt,limit))}
+ var s=settle(from:60,to:70,limit:MapCamera.nearLimit) ?? settle(from:35,to:60,limit:MapCamera.midLimit) ?? solve(35)
+ // On a very low pass beside a slope the backed-up camera can end inside the hill; look down more steeply until it is clear.
+ for tilt:Float in [60,50,42,35] where s.tilt>tilt && s.eye.y<terrain.surface(s.eye)+2 {s=solve(tilt)}
  return s
 }
