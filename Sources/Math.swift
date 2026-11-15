@@ -86,15 +86,18 @@ func aircraftOverlayProjection(_ mode:Int,_ aspect:Float,tilt:Float=70)->simd_fl
 // turns against the bank and slides further as the nose rises. Returns the rotation (radians,
 // counter-clockwise), the downward slide as a fraction of the view height, and the scale
 // that keeps the corners covered.
-func screenHorizon(mode:Int,roll:Float,pitch:Float,aspect:Float)->(angle:Float,slide:Float,cover:Float) {
- guard mode==2 else{return (0,0.15,1)}
- let angle=roll*0.6,slide=0.2+clamp(pitch,-0.5,1)*0.3
+// The horizon only belongs in a shallow view. As the camera has to tilt down with height
+// (see MapCamera.tilt) the slide fades out, and from high up the map fills the window.
+func screenHorizon(mode:Int,roll:Float,pitch:Float,aspect:Float,tilt:Float=70)->(angle:Float,slide:Float,cover:Float) {
+ let shallow=clamp((tilt-56)/14,0,1)
+ guard mode==2 else{return (0,0.15*shallow,1)}
+ let angle=roll*0.6,slide=max(0,0.2+clamp(pitch,-0.5,1)*0.3)*shallow
  return (angle,slide,cos(abs(angle))+max(aspect,1/aspect)*sin(abs(angle)))
 }
 // The same turn and slide as a transform of clip space, so the aircraft layer stays
 // registered with the scenery.
-func screenClipTransform(mode:Int,roll:Float,pitch:Float,aspect:Float)->simd_float4x4 {
- let h=screenHorizon(mode:mode,roll:roll,pitch:pitch,aspect:aspect)
+func screenClipTransform(mode:Int,roll:Float,pitch:Float,aspect:Float,tilt:Float=70)->simd_float4x4 {
+ let h=screenHorizon(mode:mode,roll:roll,pitch:pitch,aspect:aspect,tilt:tilt)
  let stretch=simd_float4x4(diagonal:SIMD4(aspect,1,1,1)),squeeze=simd_float4x4(diagonal:SIMD4(1/aspect,1,1,1)),cover=simd_float4x4(diagonal:SIMD4(h.cover,h.cover,1,1))
  return translation(SIMD3(0,-2*h.slide,0))*squeeze*rotation(h.angle,SIMD3(0,0,1))*stretch*cover
 }

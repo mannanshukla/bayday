@@ -22,10 +22,7 @@ struct FlightView:View {
     LinearGradient(colors:[Color(red:0.22,green:0.48,blue:0.88),Color(red:0.74,green:0.87,blue:0.97)],startPoint:.top,endPoint:.center).ignoresSafeArea()
     AppleScenery(game:game).frame(width:g.size.width*AppleScenery.overscan).frame(width:g.size.width).ignoresSafeArea()
     // Haze where the far edge of the map meets the sky (the cockpit draws its own, banked).
-    if !cockpit {
-     let slide=CGFloat(screenHorizon(mode:0,roll:0,pitch:0,aspect:1).slide),mist=Color(red:0.74,green:0.87,blue:0.97)
-     VStack(spacing:0) {Color.clear.frame(height:max(0,g.size.height*slide-2));LinearGradient(colors:[mist,mist.opacity(0)],startPoint:.top,endPoint:.bottom).frame(height:g.size.height*0.16);Spacer(minLength:0)}.ignoresSafeArea().allowsHitTesting(false)
-    }
+    if !cockpit {HorizonHaze(game:game,paused:game.paused)}
     MetalCanvas(game:game).ignoresSafeArea().allowsHitTesting(false)
     if cockpit {CockpitView(game:game,paused:game.paused)}
     if game.paused {Color.black.opacity(0.22).ignoresSafeArea().allowsHitTesting(false)}

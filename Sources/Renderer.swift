@@ -70,7 +70,7 @@ class FlightRenderer:NSObject,MTKViewDelegate {
   let toLocal=rotation(game.yaw,SIMD3(0,1,0)),sun=toLocal*SIMD4<Float>(-0.55,0.72,0.42,0)
   var u=Uniforms();u.vp=aircraftOverlayProjection(eye:game.cameraEye,tilt:game.cameraTilt,aspect);u.eyeTime=SIMD4(game.cameraEye,clock);u.sun=sun
   // The map picture is slid (and in the cockpit, turned) on screen; this layer follows it.
-  u.vp=screenClipTransform(mode:game.cameraMode,roll:game.roll,pitch:game.pitch,aspect:aspect)*u.vp
+  u.vp=screenClipTransform(mode:game.cameraMode,roll:game.roll,pitch:game.pitch,aspect:aspect,tilt:game.cameraTilt)*u.vp
   // Close-up used to render the app icon artwork.
   if qaHero {let eye=SIMD3<Float>(0,2.2,30);u.vp=perspective(.pi/6,aspect)*lookAt(eye,SIMD3(0,-0.2,0));u.eyeTime=SIMD4(eye,clock);u.sun=SIMD4(-0.5,0.75,0.6,0)}
   enc.setRenderPipelineState(pipeline);enc.setDepthStencilState(solidDepth);enc.setCullMode(.none)

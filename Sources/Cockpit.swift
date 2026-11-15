@@ -16,10 +16,10 @@ struct CockpitView:View {
  private func draw(_ ctx:inout GraphicsContext,_ s:CGSize){
   let w=s.width,h=s.height,top=h*Self.panelTop
   // Haze where the far edge of the map meets the sky (see screenHorizon).
-  let horizon=screenHorizon(mode:2,roll:game.roll,pitch:game.pitch,aspect:Float(w/max(1,h)))
+  let horizon=screenHorizon(mode:2,roll:game.roll,pitch:game.pitch,aspect:Float(w/max(1,h)),tilt:game.cameraTilt)
   var far=ctx;far.translateBy(x:w/2,y:h/2+CGFloat(horizon.slide)*h);far.rotate(by:.radians(Double(-horizon.angle)))
   let edge = -CGFloat(horizon.cover)*h/2,span=CGFloat(horizon.cover)*w,mist=Color(red:0.74,green:0.87,blue:0.97)
-  far.fill(Path(CGRect(x:-span/2,y:edge-2,width:span,height:h*0.16)),with:.linearGradient(Gradient(colors:[mist,mist.opacity(0)]),startPoint:CGPoint(x:0,y:edge),endPoint:CGPoint(x:0,y:edge+h*0.16)))
+  far.fill(Path(CGRect(x:-span/2,y:edge-2,width:span,height:h*0.16)),with:.linearGradient(Gradient(colors:[mist.opacity(Double(min(1,horizon.slide/0.1))),mist.opacity(0)]),startPoint:CGPoint(x:0,y:edge),endPoint:CGPoint(x:0,y:edge+h*0.16)))
   // Engine cowl and the propeller's blur ahead of the windscreen.
   let disc=CGRect(x:w*0.5-w*0.21,y:top-h*0.30,width:w*0.42,height:h*0.42)
   if !game.crashing {ctx.fill(Path(ellipseIn:disc),with:.radialGradient(Gradient(colors:[.white.opacity(0.02),.white.opacity(0.09),.white.opacity(0)]),center:CGPoint(x:w/2,y:disc.midY),startRadius:disc.width*0.2,endRadius:disc.width*0.5))}
@@ -120,5 +120,22 @@ struct CockpitView:View {
   // Fixed aircraft symbol.
   for sign in [-1,1] as [CGFloat] {var wing=Path();wing.move(to:CGPoint(x:c.x+sign*r*0.62,y:c.y));wing.addLine(to:CGPoint(x:c.x+sign*r*0.22,y:c.y));wing.addLine(to:CGPoint(x:c.x+sign*r*0.22,y:c.y+r*0.1));ctx.stroke(wing,with:.color(.orange),style:StrokeStyle(lineWidth:max(2.5,r*0.06),lineCap:.round,lineJoin:.round))}
   ctx.fill(Path(ellipseIn:CGRect(x:c.x-r*0.05,y:c.y-r*0.05,width:r*0.1,height:r*0.1)),with:.color(.orange))
+ }
+}
+
+// Haze where the far edge of the slid-down map meets the sky, in the chase views. Drawn
+// every frame from the camera's current tilt so it stays on the map's edge (see screenHorizon).
+struct HorizonHaze:View {
+ let game:FlightGame
+ let paused:Bool
+ var body:some View {
+  TimelineView(.animation(minimumInterval:1.0/60,paused:paused)) {timeline in
+   Canvas {ctx,size in
+    _=timeline.date
+    let slide=CGFloat(screenHorizon(mode:game.cameraMode,roll:0,pitch:0,aspect:1,tilt:game.cameraTilt).slide),mist=Color(red:0.74,green:0.87,blue:0.97),top=size.height*slide-2
+    guard slide>0.001 else{return}
+    ctx.fill(Path(CGRect(x:0,y:top,width:size.width,height:size.height*0.16)),with:.linearGradient(Gradient(colors:[mist.opacity(Double(min(1,slide/0.1))),mist.opacity(0)]),startPoint:CGPoint(x:0,y:top),endPoint:CGPoint(x:0,y:top+size.height*0.16)))
+   }
+  }.ignoresSafeArea().allowsHitTesting(false)
  }
 }

@@ -105,12 +105,13 @@ import MetalKit
   check(low.distance==MapCamera.minimumDistance && low.local.z>MapCamera.eye(0,tilt:70).z+20,"On a low pass the shared camera backs away to MapKit's minimum distance")
   let clip=screenClipTransform(mode:2,roll:0,pitch:0,aspect:1.6)*SIMD4<Float>(0.5,0.25,0.3,1),banked=screenClipTransform(mode:2,roll:1,pitch:0,aspect:1.6)*SIMD4<Float>(1,0,0.3,1),chase=screenClipTransform(mode:0,roll:1,pitch:0.5,aspect:1.6)*SIMD4<Float>(0.5,0.25,0.3,1)
   check(abs(clip.x-0.5)<0.0001 && abs(clip.y-(0.25-0.4))<0.0001 && banked.y>0.5 && abs(banked.z-0.3)<0.0001 && abs(chase.x-0.5)<0.0001 && abs(chase.y-(0.25-0.3))<0.0001,"The aircraft layer is turned and slid on screen exactly as the map is, in every view")
+  check(screenHorizon(mode:0,roll:0,pitch:0,aspect:1.6,tilt:70).slide==0.15 && screenHorizon(mode:0,roll:0,pitch:0,aspect:1.6,tilt:56).slide==0 && screenHorizon(mode:0,roll:0,pitch:0,aspect:1.6,tilt:35).slide==0 && screenHorizon(mode:2,roll:0,pitch:-0.5,aspect:1.6,tilt:35).slide==0 && screenHorizon(mode:2,roll:0.5,pitch:1,aspect:1.6,tilt:35).slide==0 && screenHorizon(mode:2,roll:0,pitch:1,aspect:1.6,tilt:70).slide==0.5 && screenHorizon(mode:0,roll:0,pitch:0,aspect:1.6,tilt:63).slide>0.07,"The horizon fades out as the camera tilts down with height, so no sky is drawn over a top-down view")
   let wreck2=FlightGame(testing:true);wreck2.terrain=world;wreck2.crashTime=0;wreck2.crashVelocity=SIMD3(3,4,0);wreck2.publishHUD()
   check(abs(length(wreck2.motion)-5)<0.001 && wreck2.speedReadout==Int(5*1.94384),"After a crash the readouts follow the wreck, not the speed at impact")
   let device=MTLCreateSystemDefaultDevice()!,mesh=planeMesh(device),verts=mesh.buffer.contents().bindMemory(to:Float.self,capacity:mesh.count*12)
   var framed=true
   for mode in [0,1]{for tilt:Float in [35,60,70]{for aspect:Float in [900.0/620,1280.0/800,1265.0/1380]{for pitch:Float in [-1,-0.5,0,0.5,1]{for roll:Float in [-1.08,0,1.08]{
-   let transform=screenClipTransform(mode:mode,roll:roll,pitch:pitch,aspect:aspect)*aircraftOverlayProjection(mode,aspect,tilt:tilt)*rotation(pitch,SIMD3(1,0,0))*rotation(-roll,SIMD3(0,0,1))
+   let transform=screenClipTransform(mode:mode,roll:roll,pitch:pitch,aspect:aspect,tilt:tilt)*aircraftOverlayProjection(mode,aspect,tilt:tilt)*rotation(pitch,SIMD3(1,0,0))*rotation(-roll,SIMD3(0,0,1))
    for i in 0..<mesh.count{let k=i*12,c=transform*SIMD4(verts[k],verts[k+1],verts[k+2],1);if c.w<=0 || abs(c.x/c.w)>0.97 || abs(c.y/c.w)>0.97 {framed=false}}
   }}}}}
   check(framed,"The whole aircraft stays in frame at full climb, dive and bank, at every camera tilt and window shape")

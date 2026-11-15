@@ -43,7 +43,7 @@ final class MapDiscoveryView:MKAnnotationView {
 struct AppleScenery:NSViewRepresentable {
  @ObservedObject var game:FlightGame
  // The map is drawn wider than the window so scenery to either side is already loaded when the aircraft turns.
- static let overscan:CGFloat=1.3
+ static let overscan:CGFloat=CGFloat(Double(ProcessInfo.processInfo.environment["BAYDAY_OVERSCAN"] ?? "") ?? 1.3)
  func makeCoordinator()->Coordinator {Coordinator(game)}
  func makeNSView(context:Context)->MKMapView {
   let map=MKMapView(frame:.zero);map.delegate=context.coordinator;map.showsBuildings=true;map.showsCompass=false;map.showsScale=false;map.isZoomEnabled=false;map.isScrollEnabled=false;map.isRotateEnabled=false;map.isPitchEnabled=false
@@ -103,11 +103,11 @@ extension FlightGame {
   // Slide (and in the cockpit, turn) the map picture on screen; see screenHorizon. The map
   // view is wider than the window, so the turn is measured against the window's shape.
   guard let layer=map.layer else{return}
-  let size=map.bounds.size,h=screenHorizon(mode:cameraMode,roll:roll,pitch:pitch,aspect:Float(size.width/AppleScenery.overscan/max(1,size.height)))
+  let size=map.bounds.size,h=screenHorizon(mode:cameraMode,roll:roll,pitch:pitch,aspect:Float(size.width/AppleScenery.overscan/max(1,size.height)),tilt:s.tilt)
   layer.setAffineTransform(CGAffineTransform(translationX:size.width/2,y:size.height/2-CGFloat(h.slide)*size.height).rotated(by:CGFloat(h.angle)).scaledBy(x:CGFloat(h.cover),y:CGFloat(h.cover)).translatedBy(x:-size.width/2,y:-size.height/2))
   // A second, smaller map looks a few seconds ahead so that scenery is already loading
   // when the aircraft gets there.
-  if let ahead=prefetchMap,now-prefetchClock>0.25 {
+  if let ahead=prefetchMap,now-prefetchClock>0.25,ProcessInfo.processInfo.environment["BAYDAY_NO_PREFETCH"] == nil {
    prefetchClock=now
    let lead=SIMD3<Float>(sin(yaw),0,-cos(yaw))*max(600,speed*6),there=coordinate(s.centre+lead)
    ahead.setCamera(MKMapCamera(lookingAtCenter:CLLocationCoordinate2D(latitude:there.latitude,longitude:there.longitude),fromDistance:Double(s.distance),pitch:Double(s.tilt),heading:Double(yaw)*180/Double.pi),animated:false)
