@@ -91,7 +91,7 @@ extension FlightGame {
    if eased.usable(terrain) {s=eased}
   }
   cameraTilt=s.tilt;cameraEye=s.local
-  let coord=CLLocationCoordinate2D(latitude:37.76-Double(s.centre.z)/110990,longitude:-122.38+Double(s.centre.x/metresLon))
+  let at=coordinate(s.centre),coord=CLLocationCoordinate2D(latitude:at.latitude,longitude:at.longitude)
   map.setCamera(MKMapCamera(lookingAtCenter:coord,fromDistance:Double(s.distance),pitch:Double(s.tilt),heading:Double(yaw)*180/Double.pi),animated:false)
   guard let layer=map.layer else{return}
   if cameraMode==2 {

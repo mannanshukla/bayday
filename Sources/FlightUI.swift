@@ -69,6 +69,8 @@ struct FlightView:View {
    } else if !game.challenge && found==0 && game.elapsed<15 {
     Text("Fly near a blue marker to collect it").font(.system(size:12,weight:.medium)).padding(.horizontal,14).padding(.vertical,8).aeroCapsule().allowsHitTesting(false).transition(.opacity)
    }
+   // In the cockpit, cards and hints sit above the glareshield, clear of the instruments.
+   if cockpit {Color.clear.frame(height:max(0,size.height*(1-CockpitView.panelTop+0.05)-max(110,min(190,size.height*(1-CockpitView.panelTop)-52))-30)).allowsHitTesting(false)}
    HStack(alignment:.bottom,spacing:14) {
     // In the cockpit the panel carries the instruments; the map sits at its right end.
     if !cockpit {instruments.allowsHitTesting(false)}
@@ -171,7 +173,7 @@ struct FlightView:View {
  }
  private var menuContent:some View {
   VStack(alignment:.leading,spacing:14) {
-   HStack(spacing:12) {if !game.launched {AppMark(size:56)};Text(game.launched ? "Paused":"Bay Day").font(.system(size:24,weight:.bold))}
+   HStack(spacing:12) {if !game.launched {AppMark(size:56)};Text(game.launched ? "Paused":region.appName).font(.system(size:24,weight:.bold))}
    HStack(spacing:11) {
     InfoOrb(collected:found==total,size:30)
     VStack(alignment:.leading,spacing:5) {
@@ -269,6 +271,7 @@ struct FlightView:View {
    VStack(alignment:.leading,spacing:10) {
     Text("Scenery and maps: Apple Maps (MapKit). An internet connection is required.")
     Text("Terrain elevation for collisions: Mapzen / AWS Terrain Tiles, including USGS data.")
+    if region.id=="nyc" {Text("Water areas: USGS National Land Cover Database.")}
     Text("Music: Bossa Antigua, Backbay Lounge and Carefree by Kevin MacLeod (incompetech.com), CC BY 4.0, transcoded for the app.")
     Text("The flight model is simplified.")
     Link("Music license",destination:URL(string:"https://creativecommons.org/licenses/by/4.0/")!).font(.system(size:12,weight:.medium))

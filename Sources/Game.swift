@@ -11,14 +11,8 @@ struct Place {
 struct Route {
  let name:String,subtitle:String,spawn:Place,yaw:Float,gates:[Place]
 }
-let routes:[Route] = [
- Route(name:"Golden Gate circuit",subtitle:"Bridge, headlands & island hopping · 8 gates",spawn:Place(name:"Golden Gate",lat:37.794,lon:-122.480,alt:200),yaw:0,gates:[
-  Place(name:"Presidio shoreline",lat:37.806,lon:-122.480,alt:180),Place(name:"Golden Gate",lat:37.820,lon:-122.479,alt:125),Place(name:"Marin Headlands",lat:37.834,lon:-122.481,alt:280),Place(name:"Sausalito",lat:37.849,lon:-122.478,alt:220),Place(name:"Angel Island",lat:37.850,lon:-122.444,alt:300),Place(name:"Alcatraz",lat:37.827,lon:-122.423,alt:200),Place(name:"Fisherman’s Wharf",lat:37.810,lon:-122.416,alt:190),Place(name:"Palace of Fine Arts",lat:37.803,lon:-122.448,alt:210)]),
- Route(name:"City & coast",subtitle:"Skyline, Twin Peaks & Ocean Beach · 7 gates",spawn:Place(name:"Downtown",lat:37.775,lon:-122.391,alt:440),yaw:0,gates:[
- Place(name:"Salesforce Tower",lat:37.7897,lon:-122.394,alt:410),Place(name:"Coit Tower",lat:37.8024,lon:-122.4058,alt:260),Place(name:"City Hall",lat:37.7793,lon:-122.4192,alt:240),Place(name:"Twin Peaks",lat:37.7544,lon:-122.4477,alt:440),Place(name:"Golden Gate Park",lat:37.7694,lon:-122.4862,alt:250),Place(name:"Ocean Beach",lat:37.770,lon:-122.513,alt:180),Place(name:"Lands End",lat:37.782,lon:-122.506,alt:220)]),
- Route(name:"Across the bay",subtitle:"Bay Bridge, Oakland & Berkeley · 6 gates",spawn:Place(name:"Bay Bridge",lat:37.782,lon:-122.383,alt:240),yaw:0.45,gates:[
- Place(name:"Western span",lat:37.799,lon:-122.375,alt:220),Place(name:"Yerba Buena Island",lat:37.811,lon:-122.363,alt:230),Place(name:"Eastern span",lat:37.819,lon:-122.340,alt:190),Place(name:"Oakland",lat:37.8044,lon:-122.2712,alt:300),Place(name:"Berkeley",lat:37.867,lon:-122.282,alt:320),Place(name:"Treasure Island",lat:37.825,lon:-122.370,alt:230)])]
-let launches:[Place] = [Place(name:"Golden Gate",lat:37.811,lon:-122.478,alt:180),routes[1].spawn,Place(name:"Marin Headlands",lat:37.842,lon:-122.514,alt:560),Place(name:"Oakland",lat:37.790,lon:-122.290,alt:330),Place(name:"SFO & Peninsula",lat:37.605,lon:-122.370,alt:250),Place(name:"Mount Tamalpais",lat:37.916,lon:-122.59,alt:1000),Place(name:"Oracle Park",lat:37.7747,lon:-122.3893,alt:200)]
+let routes=region.routes
+let launches=region.launches
 
 class FlightGame:ObservableObject {
  static let collectRadius:Float=140

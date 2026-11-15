@@ -4,6 +4,23 @@
 
 A native Apple Silicon Mac flying game over San Francisco, Marin, the Peninsula and the East Bay. A floatplane flies over Apple Maps scenery, with 24 information points to collect and three timed gate routes. Requires macOS 14 or newer and an internet connection. The interface is Liquid Glass on macOS 26 and later, with a material fallback on macOS 14 and 15.
 
+## Two editions
+
+The same source builds two games. A region (`Sources/Region.swift`) holds everything that differs: the centre of the 49 km world, the name, the places, routes and starts, and how unnamed water is labelled.
+
+| Edition | Region | Build | Covers |
+| --- | --- | --- | --- |
+| **Bay Day** | `sf` | `./build.sh` | San Francisco, Marin, the Peninsula, the East Bay |
+| **Harbor Day** | `nyc` | `./build.sh nyc` | Manhattan, Brooklyn, Queens, the Bronx, Staten Island, Jersey City, Newark |
+
+[Download Harbor Day for Mac](https://github.com/mannanshukla/bayday/releases/latest/download/HarborDay.zip)
+
+Each region has its own elevation grid in `Resources/<region>/height.bin`, built by `scripts/bake-height.py` from Mapzen / AWS Terrain Tiles. The game treats anything at or below 0.5 m as water. Around New York the rivers and harbor do not sit at sea level in that data, so the New York grid is built with `--land-cover`, which takes open water from the USGS National Land Cover Database.
+
+Inside New York City, Apple's geocoder names only the borough, so the neighbourhood in the place label comes from a table of about 170 neighbourhood centres (`Sources/RegionNYCNeighbourhoods.swift`): the nearest centre in the same borough. The centres are approximate, so labels can be off near neighbourhood boundaries.
+
+To add a region: write a `Region` with its places, routes and starts, bake its `height.bin`, add an icon, and add a case to `build.sh`.
+
 ## Play
 
 Open **build/Bay Day.app**, choose a start, and press **Start flight** (or Return).
@@ -51,12 +68,12 @@ The aircraft (`Sources/Mesh.swift`) is built in code: a lofted fuselage, airfoil
 Swift, AppKit, SwiftUI, MetalKit, MapKit, AVFoundation and GameController. Apple Command Line Tools are enough.
 
 ```sh
-./build.sh
-./test.sh
+./build.sh          # Bay Day;  ./build.sh nyc  builds Harbor Day
+./test.sh           # ./test.sh nyc  checks the New York edition
 ./build/Bay\ Day.app/Contents/MacOS/BayDay --qa "$PWD/build/qa"
 ```
 
-`build.sh` builds and ad-hoc signs the app. `test.sh` runs 115 checks of the flight model, crashes, the ceiling, the camera, gates, collection, pause and map transitions, saved settings and aircraft framing; test runs never touch saved progress. `--qa` saves transparent PNGs of the aircraft (four flight attitudes and a close-up) and quits. `swift scripts/make-icon.swift <aircraft-hero.png> Resources`, followed by `iconutil -c icns Resources/AppIcon.iconset -o Resources/AppIcon.icns`, rebuilds the app icon from that close-up.
+`build.sh` builds and ad-hoc signs the app. `test.sh` runs about 120 checks per edition of the flight model, crashes, the ceiling, the camera, gates, collection, pause and map transitions, saved settings and aircraft framing; test runs never touch saved progress. `--qa` saves transparent PNGs of the aircraft (four flight attitudes and a close-up) and quits. `swift scripts/make-icon.swift <aircraft-hero.png> build/icon-nyc nyc`, followed by `iconutil -c icns build/icon-nyc/AppIcon.iconset -o Resources/nyc/AppIcon.icns`, rebuilds an edition's icon from that close-up (use `sf` and `Resources/sf` for Bay Day).
 
 `--fly <camera> <turn> <climb> <start>` starts a flight immediately with a steady control input, for checking a view without the keyboard (for example `--fly 2 0.4 0 1` for the cockpit in a right turn over downtown).
 
@@ -68,6 +85,7 @@ The renderer targets 60 fps and skips three of four redraws while paused. Scener
 
 - Scenery: Apple Maps, through the system MapKit API with its attribution.
 - Elevation: [Mapzen / AWS Terrain Tiles](https://registry.opendata.aws/terrain-tiles/), including USGS sources.
+- New York water areas: [USGS National Land Cover Database](https://www.mrlc.gov/) (2021).
 - Music: "Bossa Antigua", "Backbay Lounge" and "Carefree" by Kevin MacLeod (incompetech.com), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), transcoded. The chime and crash sound are synthesized.
 - Sources for the information points are linked in the flight record and recorded in `Sources/Discoveries.swift`.
 

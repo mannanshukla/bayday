@@ -2,9 +2,11 @@ import Foundation
 import simd
 let worldHalf:Float = 24640
 let worldSize:Float = 49280
-let metresLon:Float = 111320 * cos(37.76 * .pi / 180)
+let metresLon=Float(region.metresPerLongitude),metresLat=Float(region.metresPerLatitude)
 func clamp<T:Comparable>(_ v:T,_ lo:T,_ hi:T)->T { min(hi,max(lo,v)) }
-func geographic(_ lat:Float,_ lon:Float)->SIMD3<Float> { SIMD3((lon + 122.38)*metresLon,0,-(lat-37.76)*110990) }
+// World metres from the region's centre: x east, -z north.
+func geographic(_ lat:Float,_ lon:Float)->SIMD3<Float> {SIMD3(Float((Double(lon)-region.longitude)*region.metresPerLongitude),0,Float(-(Double(lat)-region.latitude)*region.metresPerLatitude))}
+func coordinate(_ p:SIMD3<Float>)->(latitude:Double,longitude:Double) {(region.latitude-Double(p.z)/region.metresPerLatitude,region.longitude+Double(p.x)/region.metresPerLongitude)}
 func translation(_ p:SIMD3<Float>)->simd_float4x4 { var m=matrix_identity_float4x4;m.columns.3=SIMD4(p,1);return m }
 func rotation(_ angle:Float,_ axis:SIMD3<Float>)->simd_float4x4 { simd_float4x4(simd_quatf(angle:angle,axis:axis)) }
 func scaling(_ s:Float)->simd_float4x4 { simd_float4x4(diagonal:SIMD4(s,s,s,1)) }

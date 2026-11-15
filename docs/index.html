@@ -122,6 +122,8 @@ figcaption strong { color: var(--text); font-weight: 600; }
 .card p { color: var(--soft); font-size: 16px; }
 
 .panel { padding: 26px; }
+.edition { display: flex; gap: 22px; align-items: center; }
+.edition img { width: 96px; height: 96px; flex: none; }
 .two { display: grid; grid-template-columns: 1.15fr 1fr; gap: 16px; align-items: start; }
 table { width: 100%; border-collapse: collapse; font-size: 16px; }
 th, td { text-align: left; padding: 9px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.12); font-weight: 400; }
@@ -148,6 +150,7 @@ footer a { color: var(--soft); }
   body { font-size: 16px; }
   nav .links { display: none; }
   .shots, .cards { grid-template-columns: 1fr; }
+  .edition { flex-direction: column; align-items: flex-start; }
   header.hero { padding-top: 52px; }
   .panel, .card { padding: 20px; }
 }
@@ -169,6 +172,7 @@ footer a { color: var(--soft); }
   <div class="links">
     <a href="#views">Views</a>
     <a href="#features">Features</a>
+    <a href="#new-york">New York</a>
     <a href="#controls">Controls</a>
     <a href="#install">Install</a>
   </div>
@@ -213,6 +217,27 @@ footer a { color: var(--soft); }
     </div>
   </section>
 
+  <section id="new-york" class="wrap" aria-labelledby="new-york-title">
+    <h2 id="new-york-title">Harbor Day: the same game over New York</h2>
+    <div class="panel glass edition">
+      <img src="assets/icon-nyc.png" alt="Harbor Day app icon: the floatplane in front of the Brooklyn Bridge and a skyline" width="96" height="96" loading="lazy">
+      <div>
+        <p class="muted">Manhattan, Brooklyn, Queens, the Bronx, Staten Island, Jersey City and Newark, with 24 places to find, from the Statue of Liberty to Yankee Stadium, and three gate routes around the harbor, up the avenues and along the East River. The label at the top names the neighborhood you are over.</p>
+        <p style="margin-top:14px"><a class="button primary" href="https://github.com/mannanshukla/bayday/releases/latest/download/HarborDay.zip">Download Harbor Day for Mac</a></p>
+      </div>
+    </div>
+    <div class="shots" style="margin-top:20px">
+      <figure class="glass">
+        <img src="assets/nyc-chase.jpg" alt="The floatplane banking between Midtown Manhattan towers, with a label reading Garment District, Manhattan" width="1265" height="1380" loading="lazy">
+        <figcaption><strong>Midtown.</strong> Over the Garment District, heading for the Empire State Building.</figcaption>
+      </figure>
+      <figure class="glass">
+        <img src="assets/nyc-cockpit.jpg" alt="The cockpit view toward the Williamsburg Bridge and the Lower East Side" width="1265" height="1380" loading="lazy">
+        <figcaption><strong>East River.</strong> From the cockpit over Brooklyn, looking up the river past the Williamsburg Bridge.</figcaption>
+      </figure>
+    </div>
+  </section>
+
   <section id="controls" class="wrap" aria-labelledby="controls-title">
     <h2 id="controls-title">Controls</h2>
     <div class="two">
@@ -248,8 +273,8 @@ footer a { color: var(--soft); }
     <h2 id="install-title">Install</h2>
     <div class="panel glass">
       <ol>
-        <li><strong>Download</strong> <a href="https://github.com/mannanshukla/bayday/releases/latest/download/BayDay.zip">BayDay.zip</a> and unzip it.</li>
-        <li><strong>Move</strong> Bay Day to your Applications folder.</li>
+        <li><strong>Download</strong> <a href="https://github.com/mannanshukla/bayday/releases/latest/download/BayDay.zip">BayDay.zip</a> or <a href="https://github.com/mannanshukla/bayday/releases/latest/download/HarborDay.zip">HarborDay.zip</a> and unzip it.</li>
+        <li><strong>Move</strong> the app to your Applications folder.</li>
         <li><strong>Open it once from System Settings.</strong> The app is not notarized by Apple, so the first launch is blocked. Try to open it, then go to System Settings › Privacy &amp; Security and choose Open Anyway.</li>
       </ol>
       <p class="muted" style="margin-top:16px">Requires a Mac with Apple silicon, macOS 14 or later, and an internet connection for the scenery. You can also <a href="https://github.com/mannanshukla/bayday#build-and-test">build it from source</a> with Apple's command line tools.</p>
@@ -258,8 +283,8 @@ footer a { color: var(--soft); }
 </main>
 
 <footer class="wrap">
-  <p>Scenery and maps by Apple Maps. Terrain elevation from Mapzen / AWS Terrain Tiles. Music by Kevin MacLeod (incompetech.com), CC BY 4.0.</p>
-  <p>Bay Day is a personal project and is not affiliated with Apple. <a href="https://github.com/mannanshukla/bayday">github.com/mannanshukla/bayday</a></p>
+  <p>Scenery and maps by Apple Maps. Terrain elevation from Mapzen / AWS Terrain Tiles. New York water areas from the USGS National Land Cover Database. Music by Kevin MacLeod (incompetech.com), CC BY 4.0.</p>
+  <p>Bay Day and Harbor Day are a personal project and is not affiliated with Apple. <a href="https://github.com/mannanshukla/bayday">github.com/mannanshukla/bayday</a></p>
 </footer>
 </body>
 </html>

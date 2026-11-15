@@ -50,11 +50,11 @@ struct LiveFlightMap:NSViewRepresentable {
   if !follows{setExtent(map)};context.coordinator.size=size
   return map
  }
- func setExtent(_ map:MKMapView){map.setRegion(MKCoordinateRegion(center:CLLocationCoordinate2D(latitude:37.76,longitude:-122.38),latitudinalMeters:Double(worldSize),longitudinalMeters:Double(worldSize)),animated:false)}
+ func setExtent(_ map:MKMapView){map.setRegion(MKCoordinateRegion(center:CLLocationCoordinate2D(latitude:region.latitude,longitude:region.longitude),latitudinalMeters:Double(worldSize),longitudinalMeters:Double(worldSize)),animated:false)}
  // The small in-flight map follows the aircraft; the large map shows the whole region.
  var follows:Bool {size<300}
  func updateNSView(_ map:MKMapView,context:Context){
-  let p=game.position,c=CLLocationCoordinate2D(latitude:37.76-Double(p.z)/110990,longitude:-122.38+Double(p.x/metresLon))
+  let at=coordinate(game.position),c=CLLocationCoordinate2D(latitude:at.latitude,longitude:at.longitude)
   if context.coordinator.size != size {context.coordinator.size=size;context.coordinator.centre=nil;if !follows{setExtent(map)}}
   if follows {
    let last=context.coordinator.centre
@@ -76,7 +76,7 @@ struct LiveFlightMap:NSViewRepresentable {
   let game:FlightGame
   var size:CGFloat=0,gateKey = -1
   var centre:CLLocationCoordinate2D?
-  let aircraft=NavigationAnnotation(index:-1,coordinate:CLLocationCoordinate2D(latitude:37.76,longitude:-122.38))
+  let aircraft=NavigationAnnotation(index:-1,coordinate:CLLocationCoordinate2D(latitude:region.latitude,longitude:region.longitude))
   init(_ game:FlightGame){self.game=game}
   func configure(_ view:NavigationMarker,_ a:NavigationAnnotation){
    view.aircraft=a.index == -1;view.gate=a.index>=NavigationAnnotation.gateBase;view.nextGate=a.index-NavigationAnnotation.gateBase==game.nextGate;view.found=game.discovered.contains(a.index);view.tracked=game.trackedDiscovery==a.index;view.heading=game.yaw;view.needsDisplay=true
