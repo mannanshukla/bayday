@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Builds a region's elevation grid from Mapzen / AWS Terrain Tiles (Terrarium PNGs).
 
-Usage: python3 scripts/bake-height.py <centre latitude> <centre longitude> <cache folder> <output height.bin> [--land-cover]
+Usage: python3 scripts/bake-height.py <centre latitude> <centre longitude> <cache folder> <output height.bin> [--land-cover | --surface-water]
 
 The output is 1025 x 1025 little-endian Int16 samples in decimetres, row 0 at the north
 edge, covering the 49.28 km square world centred on the given point. No dependencies.
@@ -10,17 +10,23 @@ The game treats anything at or below 0.5 m as water. Where rivers and harbours d
 at sea level in the elevation data (New York), pass --land-cover: open water is then taken
 from the USGS National Land Cover Database, water cells are written at or below zero and
 land cells at 0.6 m or higher.
+
+Anywhere else in the world, pass --surface-water: water is taken from the JRC Global Surface
+Water occurrence tiles (plus anything below sea level in the elevation data) and written as
+a separate bit mask, water.bin, beside the grid. Heights are left as they are, so a river
+above sea level keeps its real surface height.
 """
-import math, os, struct, sys, urllib.parse, urllib.request, zlib
+import math, os, struct, sys, urllib.error, urllib.parse, urllib.request, zlib
 
 lat0, lon0, cache, out = float(sys.argv[1]), float(sys.argv[2]), sys.argv[3], sys.argv[4]
 land_cover = "--land-cover" in sys.argv
+use_surface_water = "--surface-water" in sys.argv
 HALF, N, Z = 24640.0, 1025, 12
 M_LAT = 111132.92 - 559.82 * math.cos(2 * math.radians(lat0))
 M_LON = 111320.0 * math.cos(math.radians(lat0))
 
 def decode(data):
-    """Decodes a non-interlaced PNG (RGB, RGBA or palette) to rows of (r, g, b) tuples."""
+    """Decodes a non-interlaced PNG (RGB, RGBA or palette) to rows of (r, g, b) or (r, g, b, a) tuples."""
     assert data[:8] == b"\x89PNG\r\n\x1a\n"
     pos, idat, plte = 8, b"", None
     while pos < len(data):
@@ -59,7 +65,7 @@ def decode(data):
                 out.append(tuple(plte[index * 3:index * 3 + 3]))
             rows.append(out)
         else:
-            rows.append([tuple(line[x * channels:x * channels + 3]) for x in range(width)])
+            rows.append([tuple(line[x * channels:(x + 1) * channels]) for x in range(width)])
     return rows
 
 tiles = {}
@@ -74,8 +80,33 @@ def tile(x, y):
     return tiles[(x, y)]
 
 def metres(px, py):
-    r, g, b = tile(int(px // 256), int(py // 256))[int(py % 256)][int(px % 256)]
+    r, g, b = tile(int(px // 256), int(py // 256))[int(py % 256)][int(px % 256)][:3]
     return r * 256 + g + b / 256 - 32768
+
+water_tiles = {}
+def surface_water(lat, lon):
+    """True where the JRC Global Surface Water tiles show water present most of the time."""
+    scale = 256 * 2 ** Z
+    px = (lon + 180) / 360 * scale
+    r = math.radians(lat)
+    py = (1 - math.log(math.tan(r) + 1 / math.cos(r)) / math.pi) / 2 * scale
+    key = (int(px // 256), int(py // 256))
+    if key not in water_tiles:
+        path = os.path.join(cache, f"water_{Z}_{key[0]}_{key[1]}.png")
+        if not os.path.exists(path):
+            url = f"https://storage.googleapis.com/global-surface-water/tiles2021/occurrence/{Z}/{key[0]}/{key[1]}.png"
+            try:
+                with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "height-bake/1.0"}), timeout=60) as r2, open(path, "wb") as f:
+                    f.write(r2.read())
+            except urllib.error.HTTPError:
+                open(path, "wb").close()          # no tile: no surface water there
+        data = open(path, "rb").read()
+        water_tiles[key] = decode(data) if data else None
+    rows = water_tiles[key]
+    if rows is None: return False
+    p = rows[int(py % 256)][int(px % 256)]
+    # Transparent is dry. The palette runs from red (rarely wet) to blue (always wet).
+    return len(p) == 4 and p[3] > 0 and p[2] > p[0]
 
 def sample(lat, lon):
     scale = 256 * 2 ** Z
@@ -101,7 +132,7 @@ if land_cover:
             f.write(r.read())
     cover = decode(open(path, "rb").read())
 OPEN_WATER, NO_DATA = (71, 107, 160), (255, 255, 255)
-values, wet = [], 0
+values, wet, mask = [], 0, bytearray((N * N + 7) // 8)
 for j in range(N):
     lat = lat0 - (-HALF + 2 * HALF * j / (N - 1)) / M_LAT
     for i in range(N):
@@ -113,8 +144,26 @@ for j in range(N):
             # Only water near sea level is flattened; a reservoir on a hill keeps its height.
             if h <= 8 and (c == OPEN_WATER or (c == NO_DATA and h <= 1)): h, wet = max(-50.0, min(h, 0.0)), wet + 1
             else: h = max(h, 0.6)
+        if use_surface_water and (h < -1 or surface_water(lat, lon)):
+            k = j * N + i
+            mask[k >> 3] |= 1 << (k & 7)
+            wet += 1
         values.append(max(-32768, min(32767, round(h * 10))))
+# Remove spikes: a sample far from all of its neighbours is bad source data, not terrain.
+fixed = 0
+for j in range(N):
+    for i in range(N):
+        v = values[j * N + i]
+        around = sorted(values[y * N + x] for y in (j - 1, j, j + 1) for x in (i - 1, i, i + 1) if 0 <= x < N and 0 <= y < N and (x, y) != (i, j))
+        median = around[len(around) // 2]
+        if abs(v - median) > 2500 or v > 30000:
+            values[j * N + i] = median if abs(median) < 30000 else 0
+            fixed += 1
+if fixed: print(f"replaced {fixed} spike samples")
 with open(out, "wb") as f:
     f.write(struct.pack(f"<{N * N}h", *values))
-land = sum(1 for v in values if v > 5)
+if use_surface_water:
+    with open(os.path.join(os.path.dirname(out), "water.bin"), "wb") as f:
+        f.write(mask)
+land = N * N - wet if use_surface_water else sum(1 for v in values if v > 5)
 print(f"{out}: {len(tiles)} tiles, min {min(values) / 10} m, max {max(values) / 10} m, {100 * land // len(values)}% land, metres per degree {M_LAT:.1f} lat / {M_LON:.1f} lon")

@@ -8,7 +8,7 @@ private let controlKeys:[(action:String,keys:String)] = [
 
 struct FlightView:View {
  @ObservedObject var game:FlightGame
- private var modal:Bool {game.showHelp || game.showCredits || game.showPassport || game.showMap}
+ private var modal:Bool {game.showHelp || game.showCredits || game.showPassport || game.showMap || game.showDestinations}
  private var flying:Bool {game.ready && !game.paused}
  private var cockpit:Bool {game.cameraMode==2 && game.launched && !game.photoMode}
  private var found:Int {game.discovered.count}
@@ -17,9 +17,15 @@ struct FlightView:View {
  var body:some View {
   GeometryReader {g in
    ZStack {
-    // Sky behind the map: in the cockpit the map slides down as the nose rises and this shows above it.
+    // Sky behind the map: the map picture is slid down the screen and this shows above its far edge.
+    SceneryPrefetch(game:game).frame(width:g.size.width*0.6,height:g.size.height*0.6).allowsHitTesting(false)
     LinearGradient(colors:[Color(red:0.22,green:0.48,blue:0.88),Color(red:0.74,green:0.87,blue:0.97)],startPoint:.top,endPoint:.center).ignoresSafeArea()
-    AppleScenery(game:game).ignoresSafeArea()
+    AppleScenery(game:game).frame(width:g.size.width*AppleScenery.overscan).frame(width:g.size.width).ignoresSafeArea()
+    // Haze where the far edge of the map meets the sky (the cockpit draws its own, banked).
+    if !cockpit {
+     let slide=CGFloat(screenHorizon(mode:0,roll:0,pitch:0,aspect:1).slide),mist=Color(red:0.74,green:0.87,blue:0.97)
+     VStack(spacing:0) {Color.clear.frame(height:max(0,g.size.height*slide-2));LinearGradient(colors:[mist,mist.opacity(0)],startPoint:.top,endPoint:.bottom).frame(height:g.size.height*0.16);Spacer(minLength:0)}.ignoresSafeArea().allowsHitTesting(false)
+    }
     MetalCanvas(game:game).ignoresSafeArea().allowsHitTesting(false)
     if cockpit {CockpitView(game:game,paused:game.paused)}
     if game.paused {Color.black.opacity(0.22).ignoresSafeArea().allowsHitTesting(false)}
@@ -35,6 +41,7 @@ struct FlightView:View {
     if game.paused && !modal {menu(g.size)}
     if game.showMap {mapPanel(g.size)}
     if game.showPassport {FlightRecordView(game:game,available:g.size)}
+    if game.showDestinations {DestinationsView(game:game,available:g.size)}
     if game.showHelp {controlsPanel}
     if game.showCredits {creditsPanel}
    }
@@ -50,6 +57,7 @@ struct FlightView:View {
    GlassGroup {
     HStack(spacing:8) {
      Button(action:game.toggleSceneryStyle){Label(sceneryLabel,systemImage:game.scenery==1 ? "building.2.fill":"globe.americas.fill")}.help("Switch between Satellite and Apple Maps 3D (T)")
+     Button(action:game.openDestinations){Label(region.name,systemImage:"airplane.departure")}.help("Choose a city")
      Button(action:game.toggleMap){Label("Map",systemImage:"map.fill")}.help("Map (M)")
      Button(action:game.openPassport){Label("Flight record",systemImage:"list.bullet.rectangle.fill")}.help("Flight record (J)")
      Button(action:game.togglePause){Label(game.paused ? (game.launched ? "Resume":"Start"):"Pause",systemImage:game.paused ? "play.fill":"pause.fill")}.help(game.paused ? "Resume (Return)":"Pause (P)")
@@ -63,6 +71,7 @@ struct FlightView:View {
   VStack(spacing:10) {
    HStack(alignment:.top) {progressChip;Spacer(minLength:8);placeChip;Spacer(minLength:8);targetChip}.allowsHitTesting(false)
    status.allowsHitTesting(false)
+   if game.titleCard {TitleCard(city:region).padding(.top,20).allowsHitTesting(false).transition(.scale(scale:0.92).combined(with:.opacity))}
    Spacer(minLength:0)
    if let i=game.activeDiscovery {
     DiscoveryCard(game:game,id:i).frame(maxWidth:min(560,size.width-80)).transition(.scale(scale:0.94).combined(with:.opacity))
@@ -82,6 +91,7 @@ struct FlightView:View {
   .animation(.snappy(duration:0.25),value:game.crashed)
   .animation(.snappy(duration:0.25),value:game.stalling)
   .animation(.snappy(duration:0.25),value:game.atCeiling)
+  .animation(.easeInOut(duration:0.5),value:game.titleCard)
   .animation(.snappy(duration:0.25),value:game.toast)
   .animation(.easeInOut(duration:0.3),value:game.place)
  }
@@ -169,11 +179,11 @@ struct FlightView:View {
   ViewThatFits(in:.vertical) {
    menuContent
    ScrollView {menuContent}
-  }.frame(width:400).aeroPanel(26).frame(maxHeight:max(280,size.height-130))
+  }.frame(width:440).aeroPanel(26).frame(maxHeight:max(280,size.height-130))
  }
  private var menuContent:some View {
   VStack(alignment:.leading,spacing:14) {
-   HStack(spacing:12) {if !game.launched {AppMark(size:56)};Text(game.launched ? "Paused":region.appName).font(.system(size:24,weight:.bold))}
+   HStack(spacing:12) {if !game.launched {AppMark(size:56)};Text(game.launched ? "Paused":appName).font(.system(size:24,weight:.bold))}
    HStack(spacing:11) {
     InfoOrb(collected:found==total,size:30)
     VStack(alignment:.leading,spacing:5) {
@@ -194,6 +204,7 @@ struct FlightView:View {
   }.padding(24)
  }
  @ViewBuilder private var menuSettings:some View {
+  row("City") {Picker("City",selection:Binding(get:{game.regionID},set:game.setRegion)){ForEach(Region.all,id:\.id){Text($0.name).tag($0.id)}}}
   row("Mode") {Picker("Mode",selection:$game.selectedChallenge){Text("Explore").tag(false);Text("Gate challenge").tag(true)}.pickerStyle(.segmented)}
   if game.selectedChallenge {
    row("Route") {Picker("Route",selection:$game.selectedRouteIndex){ForEach(0..<routes.count,id:\.self){Text(routes[$0].name).tag($0)}}}
@@ -213,7 +224,7 @@ struct FlightView:View {
    Button(action:game.begin){Label("Start flight",systemImage:"airplane").frame(maxWidth:.infinity)}.buttonStyle(AeroButtonStyle(prominent:true))
   }
   HStack(spacing:8) {
-   Button("Controls",action:game.openHelp);Button("Flight record",action:game.openPassport);Button("Credits",action:game.openCredits)
+   Button("Destinations",action:game.openDestinations);Button("Flight record",action:game.openPassport);Button("Controls",action:game.openHelp);Button("Credits",action:game.openCredits)
   }.buttonStyle(AeroButtonStyle(compact:true)).frame(maxWidth:.infinity)
  }
  private func row<Content:View>(_ title:String,@ViewBuilder content:()->Content)->some View {
@@ -271,8 +282,8 @@ struct FlightView:View {
    VStack(alignment:.leading,spacing:10) {
     Text("Scenery and maps: Apple Maps (MapKit). An internet connection is required.")
     Text("Terrain elevation for collisions: Mapzen / AWS Terrain Tiles, including USGS data.")
-    if region.id=="nyc" {Text("Water areas: USGS National Land Cover Database.")}
-    Text("Music: Bossa Antigua, Backbay Lounge and Carefree by Kevin MacLeod (incompetech.com), CC BY 4.0, transcoded for the app.")
+    Text("Water areas: USGS National Land Cover Database (New York) and the JRC Global Surface Water dataset (other cities).")
+    Text("Music by Kevin MacLeod (incompetech.com), CC BY 4.0, transcoded for the app: Bossa Antigua, Backbay Lounge, Carefree, Hep Cats, George Street Shuffle, Parisian, Ishikari Lore, Easy Lemon, Laid Back Guitars, Dragon and Toast, Samba Isobel, Desert City, Cool Vibes and Bass Walker.")
     Text("The flight model is simplified.")
     Link("Music license",destination:URL(string:"https://creativecommons.org/licenses/by/4.0/")!).font(.system(size:12,weight:.medium))
    }.fixedSize(horizontal:false,vertical:true)
@@ -315,6 +326,8 @@ struct FlightRecordView:View {
       Text("\(game.discovered.count) of \(sights.count) points found").font(.system(size:12,weight:.medium)).foregroundStyle(.secondary).monospacedDigit()
      }
      Spacer()
+     Stamp(city:region,earned:game.discovered.count==sights.count,size:54)
+     Button("Reset progress") {game.confirmReset=true}.buttonStyle(AeroButtonStyle(compact:true)).disabled(game.discovered.isEmpty).help("Clear the points found in \(region.name)")
      Button("Done") {game.showPassport=false}.buttonStyle(AeroButtonStyle(compact:true))
     }
     AeroProgress(value:Double(game.discovered.count)/Double(sights.count))
@@ -324,6 +337,10 @@ struct FlightRecordView:View {
     }
    }.padding(24).frame(width:min(900,available.width-48),height:min(600,available.height-80)).aeroPanel(26)
   }
+  .alert("Reset progress in \(region.name)?",isPresented:$game.confirmReset) {
+   Button("Reset",role:.destructive) {game.resetProgress()}
+   Button("Cancel",role:.cancel) {}
+  } message:{Text("This clears the \(game.discovered.count) of \(sights.count) points you have found here. Other cities and gate times are not affected.")}
  }
  private var grid:some View {
   LazyVGrid(columns:Array(repeating:GridItem(.flexible(),spacing:8),count:available.width<1000 ? 4:6),spacing:8) {

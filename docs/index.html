@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Bay Day: fly a floatplane over San Francisco Bay</title>
-<meta name="description" content="Bay Day is a free Mac game. Fly a floatplane over the real San Francisco Bay in Apple Maps scenery, from a chase camera or the cockpit.">
+<title>Bay Day: fly a floatplane over twelve cities</title>
+<meta name="description" content="Bay Day is a free Mac game. Fly a floatplane over twelve real cities in Apple Maps scenery, from a chase camera or the cockpit.">
 <meta name="theme-color" content="#0d3b3a">
 <meta property="og:title" content="Bay Day">
-<meta property="og:description" content="Fly a floatplane over the real San Francisco Bay. A free game for Mac.">
+<meta property="og:description" content="Fly a floatplane over twelve real cities. A free game for Mac.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://mannan.dev/bayday/">
 <meta property="og:image" content="https://mannan.dev/bayday/assets/chase.jpg">
@@ -122,8 +122,7 @@ figcaption strong { color: var(--text); font-weight: 600; }
 .card p { color: var(--soft); font-size: 16px; }
 
 .panel { padding: 26px; }
-.edition { display: flex; gap: 22px; align-items: center; }
-.edition img { width: 96px; height: 96px; flex: none; }
+.cities { font-size: 18px; line-height: 1.9; }
 .two { display: grid; grid-template-columns: 1.15fr 1fr; gap: 16px; align-items: start; }
 table { width: 100%; border-collapse: collapse; font-size: 16px; }
 th, td { text-align: left; padding: 9px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.12); font-weight: 400; }
@@ -150,7 +149,6 @@ footer a { color: var(--soft); }
   body { font-size: 16px; }
   nav .links { display: none; }
   .shots, .cards { grid-template-columns: 1fr; }
-  .edition { flex-direction: column; align-items: flex-start; }
   header.hero { padding-top: 52px; }
   .panel, .card { padding: 20px; }
 }
@@ -172,7 +170,7 @@ footer a { color: var(--soft); }
   <div class="links">
     <a href="#views">Views</a>
     <a href="#features">Features</a>
-    <a href="#new-york">New York</a>
+    <a href="#cities">Cities</a>
     <a href="#controls">Controls</a>
     <a href="#install">Install</a>
   </div>
@@ -183,7 +181,7 @@ footer a { color: var(--soft); }
   <header class="hero wrap">
     <img class="icon" src="assets/icon.png" alt="Bay Day app icon: a red and cream floatplane in front of the Golden Gate Bridge" width="136" height="136">
     <h1>Bay Day</h1>
-    <p class="lead">Fly a floatplane over the real San Francisco Bay. The scenery is Apple Maps; the plane, the flight model and the cockpit are the game.</p>
+    <p class="lead">Fly a floatplane over twelve real cities, from San Francisco Bay to Tokyo, Paris and London. The scenery is Apple Maps; the plane, the flight model and the cockpit are the game.</p>
     <div class="actions">
       <a class="button primary" href="https://github.com/mannanshukla/bayday/releases/latest/download/BayDay.zip">Download for Mac</a>
       <a class="button glass quiet" href="https://github.com/mannanshukla/bayday">Source on GitHub</a>
@@ -196,7 +194,7 @@ footer a { color: var(--soft); }
     <div class="shots">
       <figure class="glass">
         <img src="assets/chase.jpg" alt="The floatplane seen from behind as it passes the north tower of the Golden Gate Bridge, with the Marin shoreline ahead" width="1265" height="1380" loading="lazy">
-        <figcaption><strong>Chase.</strong> The camera sits behind the plane at its real position, so your height over the water and hills is what you see.</figcaption>
+        <figcaption><strong>Chase.</strong> The camera sits behind the plane at its real position and looks ahead to the horizon, so your height over the water and hills is what you see.</figcaption>
       </figure>
       <figure class="glass">
         <img src="assets/cockpit.jpg" alt="The view from the cockpit over downtown San Francisco, with five instruments and a map on the panel" width="1265" height="1380" loading="lazy">
@@ -208,32 +206,29 @@ footer a { color: var(--soft); }
   <section id="features" class="wrap" aria-labelledby="features-title">
     <h2 id="features-title">What is in it</h2>
     <div class="cards">
-      <div class="card glass"><h3>The real bay</h3><p>San Francisco, Marin, the Peninsula and the East Bay in Apple's satellite Flyover imagery or its 3D city models. A label names the neighborhood, town or water below you.</p></div>
+      <div class="card glass"><h3>Real cities</h3><p>Apple's satellite Flyover imagery or its 3D city models. A label names the neighborhood, town or water below you.</p></div>
       <div class="card glass"><h3>A plane with weight</h3><p>Dives build airspeed. Climbs and hard turns spend it. Brake in a steep climb and the wing stalls until you lower the nose.</p></div>
       <div class="card glass"><h3>Crashes</h3><p>A shallow touch skips off the water. A steep one tumbles the plane with debris, then puts you back in the air above the spot.</p></div>
-      <div class="card glass"><h3>24 places to find</h3><p>Fly past a marker to collect it and read a short fact about the place. The flight record tracks them and can set a course to the next.</p></div>
-      <div class="card glass"><h3>Gate routes</h3><p>Three timed routes with 21 gates: the Golden Gate, the city and coast, and across the bay to Oakland and Berkeley.</p></div>
+      <div class="card glass"><h3>Places to find</h3><p>Fly past a marker to collect it and read a short fact about the place. Each city has its own flight record and a passport stamp for finding them all.</p></div>
+      <div class="card glass"><h3>Gate routes</h3><p>Timed routes in every city: along the Thames, up the Seine, across Tokyo Bay, around New York Harbor.</p></div>
       <div class="card glass"><h3>Native on the Mac</h3><p>Swift, Metal and MapKit, with a Liquid Glass interface on macOS 26 and later. Keyboard or gamepad.</p></div>
     </div>
   </section>
 
-  <section id="new-york" class="wrap" aria-labelledby="new-york-title">
-    <h2 id="new-york-title">Harbor Day: the same game over New York</h2>
-    <div class="panel glass edition">
-      <img src="assets/icon-nyc.png" alt="Harbor Day app icon: the floatplane in front of the Brooklyn Bridge and a skyline" width="96" height="96" loading="lazy">
-      <div>
-        <p class="muted">Manhattan, Brooklyn, Queens, the Bronx, Staten Island, Jersey City and Newark, with 24 places to find, from the Statue of Liberty to Yankee Stadium, and three gate routes around the harbor, up the avenues and along the East River. The label at the top names the neighborhood you are over.</p>
-        <p style="margin-top:14px"><a class="button primary" href="https://github.com/mannanshukla/bayday/releases/latest/download/HarborDay.zip">Download Harbor Day for Mac</a></p>
-      </div>
+  <section id="cities" class="wrap" aria-labelledby="cities-title">
+    <h2 id="cities-title">Twelve cities</h2>
+    <div class="panel glass">
+      <p class="cities">🇺🇸 San Francisco · 🇺🇸 New York · 🇬🇧 London · 🇫🇷 Paris · 🇯🇵 Tokyo · 🇦🇺 Sydney · 🇮🇹 Rome · 🇭🇰 Hong Kong · 🇧🇷 Rio de Janeiro · 🇦🇪 Dubai · 🇺🇸 Los Angeles · 🇺🇸 Chicago</p>
+      <p class="muted" style="margin-top:12px">Each city has its own places to find, gate routes, starting points and signature tune, and keeps its own progress. Find every place in a city to earn its passport stamp.</p>
     </div>
     <div class="shots" style="margin-top:20px">
       <figure class="glass">
-        <img src="assets/nyc-chase.jpg" alt="The floatplane banking between Midtown Manhattan towers, with a label reading Garment District, Manhattan" width="1265" height="1380" loading="lazy">
-        <figcaption><strong>Midtown.</strong> Over the Garment District, heading for the Empire State Building.</figcaption>
+        <img src="assets/paris.jpg" alt="The floatplane banking past the Eiffel Tower above the Seine, with a label reading 15th Arrondissement, Paris" width="1265" height="1380" loading="lazy">
+        <figcaption><strong>Paris.</strong> Past the Eiffel Tower, with the horizon ahead and the arrondissement named at the top.</figcaption>
       </figure>
       <figure class="glass">
-        <img src="assets/nyc-cockpit.jpg" alt="The cockpit view toward the Williamsburg Bridge and the Lower East Side" width="1265" height="1380" loading="lazy">
-        <figcaption><strong>East River.</strong> From the cockpit over Brooklyn, looking up the river past the Williamsburg Bridge.</figcaption>
+        <img src="assets/nyc-chase.jpg" alt="The floatplane between Midtown Manhattan towers, with a label reading Garment District, Manhattan" width="1265" height="1380" loading="lazy">
+        <figcaption><strong>New York.</strong> Over the Garment District. Manhattan, Brooklyn, Queens, the Bronx, Staten Island, Jersey City and Hoboken are all there.</figcaption>
       </figure>
     </div>
   </section>
@@ -273,8 +268,8 @@ footer a { color: var(--soft); }
     <h2 id="install-title">Install</h2>
     <div class="panel glass">
       <ol>
-        <li><strong>Download</strong> <a href="https://github.com/mannanshukla/bayday/releases/latest/download/BayDay.zip">BayDay.zip</a> or <a href="https://github.com/mannanshukla/bayday/releases/latest/download/HarborDay.zip">HarborDay.zip</a> and unzip it.</li>
-        <li><strong>Move</strong> the app to your Applications folder.</li>
+        <li><strong>Download</strong> <a href="https://github.com/mannanshukla/bayday/releases/latest/download/BayDay.zip">BayDay.zip</a> and unzip it.</li>
+        <li><strong>Move</strong> Bay Day to your Applications folder.</li>
         <li><strong>Open it once from System Settings.</strong> The app is not notarized by Apple, so the first launch is blocked. Try to open it, then go to System Settings › Privacy &amp; Security and choose Open Anyway.</li>
       </ol>
       <p class="muted" style="margin-top:16px">Requires a Mac with Apple silicon, macOS 14 or later, and an internet connection for the scenery. You can also <a href="https://github.com/mannanshukla/bayday#build-and-test">build it from source</a> with Apple's command line tools.</p>
@@ -283,8 +278,8 @@ footer a { color: var(--soft); }
 </main>
 
 <footer class="wrap">
-  <p>Scenery and maps by Apple Maps. Terrain elevation from Mapzen / AWS Terrain Tiles. New York water areas from the USGS National Land Cover Database. Music by Kevin MacLeod (incompetech.com), CC BY 4.0.</p>
-  <p>Bay Day and Harbor Day are a personal project and is not affiliated with Apple. <a href="https://github.com/mannanshukla/bayday">github.com/mannanshukla/bayday</a></p>
+  <p>Scenery and maps by Apple Maps. Terrain elevation from Mapzen / AWS Terrain Tiles. Water areas from the USGS National Land Cover Database and the JRC Global Surface Water dataset. Music by Kevin MacLeod (incompetech.com), CC BY 4.0.</p>
+  <p>Bay Day is a personal project and is not affiliated with Apple. <a href="https://github.com/mannanshukla/bayday">github.com/mannanshukla/bayday</a></p>
 </footer>
 </body>
 </html>

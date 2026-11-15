@@ -15,8 +15,8 @@ struct CockpitView:View {
  }
  private func draw(_ ctx:inout GraphicsContext,_ s:CGSize){
   let w=s.width,h=s.height,top=h*Self.panelTop
-  // Haze where the far edge of the map meets the sky (see cockpitHorizon).
-  let horizon=cockpitHorizon(roll:game.roll,pitch:game.pitch,aspect:Float(w/max(1,h)))
+  // Haze where the far edge of the map meets the sky (see screenHorizon).
+  let horizon=screenHorizon(mode:2,roll:game.roll,pitch:game.pitch,aspect:Float(w/max(1,h)))
   var far=ctx;far.translateBy(x:w/2,y:h/2+CGFloat(horizon.slide)*h);far.rotate(by:.radians(Double(-horizon.angle)))
   let edge = -CGFloat(horizon.cover)*h/2,span=CGFloat(horizon.cover)*w,mist=Color(red:0.74,green:0.87,blue:0.97)
   far.fill(Path(CGRect(x:-span/2,y:edge-2,width:span,height:h*0.16)),with:.linearGradient(Gradient(colors:[mist,mist.opacity(0)]),startPoint:CGPoint(x:0,y:edge),endPoint:CGPoint(x:0,y:edge+h*0.16)))

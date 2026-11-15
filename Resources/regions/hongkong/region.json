@@ -1,0 +1,235 @@
+{
+ "id": "hongkong",
+ "name": "Hong Kong",
+ "country": "Hong Kong",
+ "flag": "🇭🇰",
+ "tagline": "Victoria Harbour",
+ "latitude": 22.3,
+ "longitude": 114.17,
+ "water": "Victoria Harbour",
+ "music": "dragon-and-toast",
+ "localName": "香港",
+ "greeting": "你好",
+ "sites": [
+  {
+   "name": "Victoria Peak",
+   "lat": 22.2759,
+   "lon": 114.1455,
+   "group": "HONG KONG ISLAND",
+   "fact": "The highest hill on Hong Kong Island at 552 metres. The Peak Tram has climbed it since 1888.",
+   "hint": "The wooded mountain behind the towers of Central.",
+   "source": "https://en.wikipedia.org/wiki/Victoria_Peak"
+  },
+  {
+   "name": "International Commerce Centre",
+   "lat": 22.3033,
+   "lon": 114.1602,
+   "group": "KOWLOON",
+   "fact": "At 484 metres, the tallest building in Hong Kong. It was completed in 2010.",
+   "hint": "The tallest tower on the Kowloon side, on the western waterfront.",
+   "source": "https://en.wikipedia.org/wiki/International_Commerce_Centre"
+  },
+  {
+   "name": "Star Ferry Pier",
+   "lat": 22.2937,
+   "lon": 114.1687,
+   "group": "KOWLOON",
+   "fact": "The Star Ferry has crossed the harbour between Kowloon and Hong Kong Island since 1888.",
+   "hint": "At the tip of Kowloon, beside an old clock tower.",
+   "source": "https://en.wikipedia.org/wiki/Star_Ferry"
+  },
+  {
+   "name": "Bank of China Tower",
+   "lat": 22.2793,
+   "lon": 114.1616,
+   "group": "HONG KONG ISLAND",
+   "fact": "I. M. Pei's tower of glass triangles, completed in 1990. It was the first building outside the United States to rise above 305 metres.",
+   "hint": "The sharp-edged tower with white diagonal lines, in Central.",
+   "source": "https://en.wikipedia.org/wiki/Bank_of_China_Tower_(Hong_Kong)"
+  },
+  {
+   "name": "Two International Finance Centre",
+   "lat": 22.2855,
+   "lon": 114.1588,
+   "group": "HONG KONG ISLAND",
+   "fact": "A tower more than 410 metres tall on the Central waterfront, completed in 2003.",
+   "hint": "The tallest tower on the island side, at the water's edge.",
+   "source": "https://en.wikipedia.org/wiki/International_Finance_Centre_(Hong_Kong)"
+  },
+  {
+   "name": "Happy Valley Racecourse",
+   "lat": 22.2726,
+   "lon": 114.183,
+   "group": "HONG KONG ISLAND",
+   "fact": "Horses have raced in this valley since 1846. Tower blocks now look down on the track.",
+   "hint": "An oval track ringed by apartment towers, east of Central.",
+   "source": "https://en.wikipedia.org/wiki/Happy_Valley_Racecourse"
+  },
+  {
+   "name": "Kai Tak",
+   "lat": 22.307,
+   "lon": 114.213,
+   "group": "KOWLOON",
+   "fact": "Until 1998 this was Hong Kong's airport, famous for a low turn over the rooftops of Kowloon on the way in. The runway is now a cruise terminal.",
+   "hint": "The long finger of land pointing into the harbour from east Kowloon.",
+   "source": "https://en.wikipedia.org/wiki/Kai_Tak_Airport"
+  },
+  {
+   "name": "Tsing Ma Bridge",
+   "lat": 22.3515,
+   "lon": 114.074,
+   "group": "NEW TERRITORIES",
+   "fact": "Opened in 1997 with a main span of 1,377 metres, the longest in the world carrying both road and rail.",
+   "hint": "The big suspension bridge in the north-west, beyond Tsing Yi island.",
+   "source": "https://en.wikipedia.org/wiki/Tsing_Ma_Bridge"
+  },
+  {
+   "name": "Lion Rock",
+   "lat": 22.3523,
+   "lon": 114.187,
+   "group": "KOWLOON",
+   "fact": "A 495-metre peak shaped like a crouching lion. It has become a symbol of Hong Kong's spirit.",
+   "hint": "The rocky summit on the ridge north of Kowloon.",
+   "source": "https://en.wikipedia.org/wiki/Lion_Rock"
+  },
+  {
+   "name": "Stonecutters Bridge",
+   "lat": 22.326,
+   "lon": 114.118,
+   "group": "KOWLOON",
+   "fact": "A cable-stayed bridge over the container port, opened in 2009, with towers 298 metres tall.",
+   "hint": "The bridge with two tall single towers, by the container terminals.",
+   "source": "https://en.wikipedia.org/wiki/Stonecutters_Bridge"
+  },
+  {
+   "name": "Ocean Park",
+   "lat": 22.2467,
+   "lon": 114.1757,
+   "group": "HONG KONG ISLAND",
+   "fact": "A marine and amusement park opened in 1977 on the south side of the island, with a cable car between its two halves.",
+   "hint": "On a headland on the south coast of Hong Kong Island.",
+   "source": "https://en.wikipedia.org/wiki/Ocean_Park_Hong_Kong"
+  },
+  {
+   "name": "Sha Tin Racecourse",
+   "lat": 22.4,
+   "lon": 114.203,
+   "group": "NEW TERRITORIES",
+   "fact": "Opened in 1978 on land reclaimed from the sea. It holds about 85,000 people.",
+   "hint": "Beside the river in Sha Tin, north of the Kowloon hills.",
+   "source": "https://en.wikipedia.org/wiki/Sha_Tin_Racecourse"
+  }
+ ],
+ "routes": [
+  {
+   "name": "Harbour dash",
+   "subtitle": "Kai Tak to Happy Valley · 6 gates",
+   "spawn": {
+    "name": "Lei Yue Mun",
+    "lat": 22.29,
+    "lon": 114.235,
+    "alt": 300
+   },
+   "gates": [
+    {
+     "name": "Kai Tak",
+     "lat": 22.307,
+     "lon": 114.213,
+     "alt": 250
+    },
+    {
+     "name": "Star Ferry Pier",
+     "lat": 22.2937,
+     "lon": 114.1687,
+     "alt": 250
+    },
+    {
+     "name": "International Commerce Centre",
+     "lat": 22.3033,
+     "lon": 114.1602,
+     "alt": 250
+    },
+    {
+     "name": "Two International Finance Centre",
+     "lat": 22.2855,
+     "lon": 114.1588,
+     "alt": 250
+    },
+    {
+     "name": "Bank of China Tower",
+     "lat": 22.2793,
+     "lon": 114.1616,
+     "alt": 250
+    },
+    {
+     "name": "Happy Valley Racecourse",
+     "lat": 22.2726,
+     "lon": 114.183,
+     "alt": 250
+    }
+   ]
+  },
+  {
+   "name": "Bridges and peaks",
+   "subtitle": "Stonecutters to Sha Tin · 4 gates",
+   "spawn": {
+    "name": "West Kowloon",
+    "lat": 22.3,
+    "lon": 114.14,
+    "alt": 350
+   },
+   "gates": [
+    {
+     "name": "Stonecutters Bridge",
+     "lat": 22.326,
+     "lon": 114.118,
+     "alt": 250
+    },
+    {
+     "name": "Tsing Ma Bridge",
+     "lat": 22.3515,
+     "lon": 114.074,
+     "alt": 250
+    },
+    {
+     "name": "Lion Rock",
+     "lat": 22.3523,
+     "lon": 114.187,
+     "alt": 250
+    },
+    {
+     "name": "Sha Tin Racecourse",
+     "lat": 22.4,
+     "lon": 114.203,
+     "alt": 250
+    }
+   ]
+  }
+ ],
+ "launches": [
+  {
+   "name": "Victoria Harbour",
+   "lat": 22.29,
+   "lon": 114.19,
+   "alt": 260
+  },
+  {
+   "name": "Kowloon",
+   "lat": 22.32,
+   "lon": 114.17,
+   "alt": 450
+  },
+  {
+   "name": "The Peak",
+   "lat": 22.265,
+   "lon": 114.15,
+   "alt": 750
+  },
+  {
+   "name": "Tsing Yi",
+   "lat": 22.34,
+   "lon": 114.1,
+   "alt": 500
+  }
+ ]
+}

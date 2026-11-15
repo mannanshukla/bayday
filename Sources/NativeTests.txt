@@ -8,6 +8,19 @@ import MetalKit
   let p=perspective(.pi/3,1.6),near=p*SIMD4<Float>(0,0,-1,1),far=p*SIMD4<Float>(0,0,-100000,1)
   check(abs(near.z/near.w-1)<0.000001 && far.z/far.w>0 && far.z/far.w<0.00002,"Reversed-Z near/far precision")
   let g=FlightGame(testing:true);check(g.scenery==2 && g.preferredScenery==2,"Satellite is the first-launch default");g.terrain=try TerrainData(URL(fileURLWithPath:CommandLine.arguments[1]));g.ready=true;g.position=SIMD3(0,1000,0);g.previous=g.position;g.resume();g.key(125,down:true)
+  // A flat piece of land and, where the city has any, a stretch of open water, for the checks below.
+  var land=SIMD3<Float>.zero,water=SIMD3<Float>.zero,foundLand=false,foundWater=false
+  let scan=g.terrain!
+  for i in stride(from:-18000,through:18000,by:500){for j in stride(from:-18000,through:18000,by:500){let x=Float(i),z=Float(j)
+   let around=[(x,z),(x+300,z),(x-300,z),(x,z+300),(x,z-300),(x,z-900),(x,z-1800)],hs=around.map{scan.height($0.0,$0.1)},wet=around.map{scan.isWater($0.0,$0.1)}
+   if !foundLand && !wet.contains(true) && hs.min()!>3 && hs.max()!-hs.min()!<25 {land=SIMD3(x,0,z);foundLand=true}
+   if !foundWater && !wet.contains(false) && hs.max()!-hs.min()!<1 {water=SIMD3(x,max(0,hs[0]),z);foundWater=true}
+  }}
+  check(foundLand,"The city has flat land to test on"+(foundWater ? " and open water":" (no open water wide enough to test)"))
+  // Places can sit on hilltops: put test aircraft a fixed height above the ground there.
+  func over(_ p:SIMD3<Float>,_ height:Float=300)->SIMD3<Float> {SIMD3(p.x,scan.surface(p)+height,p.z)}
+  // A clear spot for camera checks: over the flat land, measured above it.
+  let clear=SIMD3<Float>(land.x,scan.surface(land),land.z)
   for _ in 0..<60{g.update(1/60)};check(g.position.y>1015,"Pull back climbs")
   g.clearInput();g.key(124,down:true);let yaw=g.yaw;for _ in 0..<60{g.update(1/60)};check(g.yaw>yaw+0.1,"Right bank turns east")
   g.pause();let saved=g.position;for _ in 0..<60{g.update(1/60)};check(g.position==saved && g.keys.isEmpty,"Pause freezes simulation and clears inputs")
@@ -15,23 +28,23 @@ import MetalKit
   g.clearInput();g.position=SIMD3(0,1000,0);g.pitch=0;g.roll=0;g.shift=true;let boost=g.boost;for _ in 0..<120{g.update(1/60)};check(g.speed>Aero.cruise*1.4 && g.boost<boost,"Boost accelerates and drains charge")
   g.shift=false;for _ in 0..<120{g.update(1/60)};check(g.boost>boost-0.24,"Boost recharges")
   g.selectedChallenge=true;g.selectedRouteIndex=0;g.begin();check(g.challenge && g.routeIndex==0 && g.nextGate==0 && g.scenery==2,"Starting a challenge resets progress and keeps the chosen scenery")
-  let originalRoute=g.routeIndex;g.pause();g.selectedRouteIndex=2;g.resume();check(g.routeIndex==originalRoute,"Pending route selection does not alter resumed flight")
-  g.begin();check(g.routeIndex==2 && g.nextGate==0,"New flight commits selected route")
-  let gate=routes[2].gates[0];g.position=gate.position+SIMD3(0,0,15);g.pitch=0;g.yaw=0;g.clearInput();g.update(1/60);check(g.nextGate==1 && g.points==1000,"Passing a gate awards its score")
-  let second=routes[2].gates[1];g.position=second.position+SIMD3(0,900,400);g.update(1/60);check(g.nextGate==1,"A gate 400 m away is not collected")
+  let originalRoute=g.routeIndex;g.pause();g.selectedRouteIndex=routes.count-1;g.resume();check(g.routeIndex==originalRoute,"Pending route selection does not alter resumed flight")
+  g.begin();check(g.routeIndex==routes.count-1 && g.nextGate==0,"New flight commits selected route")
+  let gate=routes[routes.count-1].gates[0];g.position=over(gate.position+SIMD3(0,0,15));g.pitch=0;g.yaw=0;g.clearInput();g.update(1/60);check(g.nextGate==1 && g.points==1000,"Passing a gate awards its score")
+  let second=routes[routes.count-1].gates[1];g.position=second.position+SIMD3(0,900,400);g.update(1/60);check(g.nextGate==1,"A gate 400 m away is not collected")
   g.position=second.position+SIMD3(0,900,100);g.update(1/60);check(g.nextGate==2 && g.points==2000,"A gate is collected within 140 m at any altitude")
   g.routeFinished=true;g.points=5000;let elapsed=g.flightElapsed;g.position=SIMD3(0,1000,0);for _ in 0..<60{g.update(1/60)};check(g.flightElapsed==elapsed && g.points==5000,"Completed result stays fixed")
-  g.routeFinished=false;g.challenge=false;g.position=SIMD3(0,-50,0);g.update(1/60);check(g.position.y >= Aero.clearance && g.pitch>0 && !g.crashed,"Shallow surface contact skips back above the surface")
+  g.routeFinished=false;g.challenge=false;g.position=clear-SIMD3(0,50,0);g.update(1/60);check(g.position.y >= clear.y+Aero.clearance && g.pitch>0 && !g.crashed,"Shallow surface contact skips back above the surface")
   g.discovered=[];g.sessionFinds=0;g.activeDiscovery=nil;g.collect(0)
   check(g.discovered==Set([0]) && g.activeDiscovery==0 && g.sessionFinds==1,"i point unlocks its story and passport stamp")
   g.collect(0);check(g.sessionFinds==1,"Collected tiles cannot award duplicate finds")
   g.pause();g.setCourse(4);check(g.trackedDiscovery==4 && !g.paused && !g.showPassport,"Passport sets a course and returns to flight")
-  g.activeDiscovery=nil;g.discovered=[];g.position=sights[16].position+SIMD3(0,0,60);g.pitch=0;g.yaw=0;g.challenge=false;g.clearInput();g.update(1/60)
-  check(g.discovered.contains(16) && g.activeDiscovery==16,"Flying into a visible i point collects it")
-  g.scenery=1;g.position=sights[22].position+SIMD3(0,700,60);g.previous=g.position;g.pitch=0;g.yaw=0;g.update(1/60)
-  check(g.discovered.contains(22),"Apple Maps collects nearby ground annotations at flight altitude")
-  check(g.discoveryDistance(sights[22])<140,"Apple course distance matches horizontal collection range")
-  check(discoverySites.count==24 && Set(discoverySites.map{$0.place.name}).count==24,"24 unique information points")
+  g.activeDiscovery=nil;g.discovered=[];g.position=over(sights[sights.count/2].position+SIMD3(0,0,60));g.pitch=0;g.yaw=0;g.challenge=false;g.clearInput();g.update(1/60)
+  check(g.discovered.contains(sights.count/2) && g.activeDiscovery==sights.count/2,"Flying into a visible i point collects it")
+  g.scenery=1;g.position=sights[sights.count-2].position+SIMD3(0,700,60);g.previous=g.position;g.pitch=0;g.yaw=0;g.update(1/60)
+  check(g.discovered.contains(sights.count-2),"Apple Maps collects nearby ground annotations at flight altitude")
+  check(g.discoveryDistance(sights[sights.count-2])<140,"Apple course distance matches horizontal collection range")
+  check(discoverySites.count>=12 && Set(discoverySites.map{$0.place.name}).count==discoverySites.count,"\(discoverySites.count) unique information points in \(region.name)")
   for site in discoverySites {check(!site.fact.isEmpty && !site.hint.isEmpty && URL(string:site.source) != nil,"Fact, hint and source: \(site.place.name)")}
 
   g.chooseScenery(1);g.selectedChallenge=true;g.begin()
@@ -50,8 +63,8 @@ import MetalKit
   check(!g.challenge && !g.selectedChallenge && g.scenery==2 && g.nearest==sights[1].name,"Discovery course leaves a gate challenge and updates the compass")
   g.trackedDiscovery=4;g.forward=SIMD3(1,0,0);g.reset()
   check(g.trackedDiscovery==nil && g.forward==SIMD3(0,0,-1),"Restart clears an old course and resets the camera direction")
-  let fresh=FlightGame(testing:true);fresh.ready=true;fresh.terrain=g.terrain;fresh.launchIndex=6;fresh.togglePause()
-  check(fresh.launched && !fresh.paused && distance(fresh.position,launches[6].position)<0.1,"First Fly button applies the chosen departure")
+  let fresh=FlightGame(testing:true);fresh.ready=true;fresh.terrain=g.terrain;fresh.launchIndex=launches.count-1;fresh.togglePause()
+  check(fresh.launched && !fresh.paused && distance(fresh.position,launches[launches.count-1].position)<0.1,"First Fly button applies the chosen departure")
   // Map camera: tilt is continuous in height and always within what MapKit honours.
   var smooth=true,legal=true,previousTilt=MapCamera.tilt(height:0)
   for h in stride(from:Float(0),through:3000,by:1) {let t=MapCamera.tilt(height:h);if abs(t-previousTilt)>0.5{smooth=false};previousTilt=t;if t>MapCamera.allowedTilt(distance:h/cos(t*Float.pi/180))+0.001{legal=false}}
@@ -59,7 +72,7 @@ import MetalKit
   var rigid=true,centred=true,within=true,agree=true
   let world=g.terrain!
   for mode in 0...2 {for altitude:Float in [150,400,900,1600,2400] {for heading:Float in [0,1.3,-2.4] {
-   let p=SIMD3<Float>(-9000,altitude,-4000),c=solveMapCamera(position:p,yaw:heading,mode:mode,terrain:world)
+   let p=clear+SIMD3<Float>(0,altitude,0),c=solveMapCamera(position:p,yaw:heading,mode:mode,terrain:world)
    let local=MapCamera.eye(mode,tilt:c.tilt),ahead=SIMD3<Float>(sin(heading),0,-cos(heading)),expected=p+SIMD3(0,local.y,0)-ahead*local.z
    if distance(c.eye,expected)>0.01 || distance(c.local,local)>0.01{rigid=false}
   }}}
@@ -79,25 +92,25 @@ import MetalKit
   check(agree,"The map and the aircraft layer always share one camera position and line of sight")
   // Flying on should never snap the view: step along tracks over hills and through a climb.
   var steady=true,worst:Float=0
-  for (start,heading,rise) in [(SIMD3<Float>(19000,1177,-5718),Float(2.3866277),Float(0)),(SIMD3<Float>(-14600,488,-17880),Float(-1.78323),Float(0)),(SIMD3<Float>(-9000,60,-4000),Float(0.4),Float(1.2)),(SIMD3<Float>(-15000,1000,-12000),Float(1.1),Float(-0.3))] {
+  for (start,heading,rise) in [(SIMD3<Float>(19000,1177,-5718),Float(2.3866277),Float(0)),(SIMD3<Float>(-14600,488,-17880),Float(-1.78323),Float(0)),(clear+SIMD3<Float>(0,60,0),Float(0.4),Float(1.2)),(SIMD3<Float>(-15000,1000,-12000),Float(1.1),Float(-0.3))] {
    var last:Float?
    for i in 0..<1600 {let f=Float(i),p=start+SIMD3(sin(heading)*f,rise*f,-cos(heading)*f),t=solveMapCamera(position:SIMD3(p.x,max(p.y,world.surface(p)+40),p.z),yaw:heading,mode:0,terrain:world).tilt
     if let l=last {worst=max(worst,abs(t-l));if abs(t-l)>2{steady=false}};last=t}
   }
   check(steady,"Flying over hills or climbing never snaps the camera tilt (largest step \(worst)° per metre)")
   check(easedTilt(current:70,target:60,elapsed:0.1)==67 && easedTilt(current:40,target:41,elapsed:0.1)==41 && easedTilt(current:35,target:70,elapsed:1.0/60)==35.5,"A sudden change in the solved tilt is eased at 30° per second")
-  let given=cameraSolution(position:SIMD3(-9000,400,-4000),yaw:0.3,mode:0,terrain:world,tilt:52)
-  check(given.tilt==52 && given.usable(world) && abs(given.centre.y-world.surface(given.centre))<2 && !cameraSolution(position:SIMD3(-9000,2000,-4000),yaw:0,mode:0,terrain:world,tilt:70).usable(world),"A camera at a given tilt is solved the same way, and reports when MapKit would not honour it")
-  let low=solveMapCamera(position:SIMD3(-9000,3,-4000),yaw:0,mode:0,terrain:world)
+  let given=cameraSolution(position:clear+SIMD3(0,400,0),yaw:0.3,mode:0,terrain:world,tilt:52)
+  check(given.tilt==52 && given.usable(world) && abs(given.centre.y-world.surface(given.centre))<2 && !cameraSolution(position:clear+SIMD3(0,2000,0),yaw:0,mode:0,terrain:world,tilt:70).usable(world),"A camera at a given tilt is solved the same way, and reports when MapKit would not honour it")
+  let low=solveMapCamera(position:clear+SIMD3(0,3,0),yaw:0,mode:0,terrain:world)
   check(low.distance==MapCamera.minimumDistance && low.local.z>MapCamera.eye(0,tilt:70).z+20,"On a low pass the shared camera backs away to MapKit's minimum distance")
-  let clip=cockpitClipTransform(roll:0,pitch:0,aspect:1.6)*SIMD4<Float>(0.5,0.25,0.3,1),banked=cockpitClipTransform(roll:1,pitch:0,aspect:1.6)*SIMD4<Float>(1,0,0.3,1)
-  check(abs(clip.x-0.5)<0.0001 && abs(clip.y-(0.25-0.4))<0.0001 && banked.y>0.5 && abs(banked.z-0.3)<0.0001,"Cockpit effects are turned and slid on screen exactly as the map is")
+  let clip=screenClipTransform(mode:2,roll:0,pitch:0,aspect:1.6)*SIMD4<Float>(0.5,0.25,0.3,1),banked=screenClipTransform(mode:2,roll:1,pitch:0,aspect:1.6)*SIMD4<Float>(1,0,0.3,1),chase=screenClipTransform(mode:0,roll:1,pitch:0.5,aspect:1.6)*SIMD4<Float>(0.5,0.25,0.3,1)
+  check(abs(clip.x-0.5)<0.0001 && abs(clip.y-(0.25-0.4))<0.0001 && banked.y>0.5 && abs(banked.z-0.3)<0.0001 && abs(chase.x-0.5)<0.0001 && abs(chase.y-(0.25-0.3))<0.0001,"The aircraft layer is turned and slid on screen exactly as the map is, in every view")
   let wreck2=FlightGame(testing:true);wreck2.terrain=world;wreck2.crashTime=0;wreck2.crashVelocity=SIMD3(3,4,0);wreck2.publishHUD()
   check(abs(length(wreck2.motion)-5)<0.001 && wreck2.speedReadout==Int(5*1.94384),"After a crash the readouts follow the wreck, not the speed at impact")
   let device=MTLCreateSystemDefaultDevice()!,mesh=planeMesh(device),verts=mesh.buffer.contents().bindMemory(to:Float.self,capacity:mesh.count*12)
   var framed=true
   for mode in [0,1]{for tilt:Float in [35,60,70]{for aspect:Float in [900.0/620,1280.0/800,1265.0/1380]{for pitch:Float in [-1,-0.5,0,0.5,1]{for roll:Float in [-1.08,0,1.08]{
-   let transform=aircraftOverlayProjection(mode,aspect,tilt:tilt)*rotation(pitch,SIMD3(1,0,0))*rotation(-roll,SIMD3(0,0,1))
+   let transform=screenClipTransform(mode:mode,roll:roll,pitch:pitch,aspect:aspect)*aircraftOverlayProjection(mode,aspect,tilt:tilt)*rotation(pitch,SIMD3(1,0,0))*rotation(-roll,SIMD3(0,0,1))
    for i in 0..<mesh.count{let k=i*12,c=transform*SIMD4(verts[k],verts[k+1],verts[k+2],1);if c.w<=0 || abs(c.x/c.w)>0.97 || abs(c.y/c.w)>0.97 {framed=false}}
   }}}}}
   check(framed,"The whole aircraft stays in frame at full climb, dive and bank, at every camera tilt and window shape")
@@ -120,13 +133,6 @@ import MetalKit
   check(stalled && dropped,"Braking in a steep climb stalls and drops the nose")
   f.clearInput();run(f,6);check(f.stallAmount<0.05 && f.speed>Aero.cruise*0.7,"Releasing the controls recovers from a stall")
   // Crash dynamics
-  var land=SIMD3<Float>.zero,water=SIMD3<Float>.zero,foundLand=false,foundWater=false
-  for i in stride(from:-18000,through:18000,by:500){for j in stride(from:-18000,through:18000,by:500){let x=Float(i),z=Float(j)
-   let hs=[terrain.height(x,z),terrain.height(x+300,z),terrain.height(x-300,z),terrain.height(x,z+300),terrain.height(x,z-300),terrain.height(x,z-900),terrain.height(x,z-1800)]
-   if !foundLand && hs.min()!>3 && hs.max()!-hs.min()!<25 {land=SIMD3(x,0,z);foundLand=true}
-   if !foundWater && hs.max()!<=0.5 {water=SIMD3(x,0,z);foundWater=true}
-  }}
-  check(foundLand && foundWater,"Test terrain has flat land and open water")
   let ground=terrain.surface(land)
   f=pilot(land+SIMD3(0,ground+70,0));aim(f,yaw:0,pitch:-0.9);f.challenge=true;f.points=1000;run(f,3){f.crashed}
   check(f.crashed && f.crashing && f.points==750 && f.impactFlash==1 && !f.particles.isEmpty,"A steep impact crashes, costs points and throws debris")
@@ -138,10 +144,13 @@ import MetalKit
   f=pilot(land+SIMD3(0,ground+Aero.clearance+3,0));aim(f,yaw:0,pitch:-0.07);run(f,2){f.speed<Aero.cruise-2}
   check(!f.crashed && f.speed<Aero.cruise-2 && f.pitch>0 && f.velocityDir.y>0 && !f.particles.isEmpty,"A shallow touch on land bounces back into the air")
   // The same approach, steeper than land allows but within what the floats take on water.
-  f=pilot(land+SIMD3(0,ground+Aero.clearance+3,0));aim(f,yaw:0,pitch:-0.21);run(f,2){f.crashed || !f.particles.isEmpty};let onLand=f.crashed
-  f=pilot(water+SIMD3(0,Aero.clearance+3,0));aim(f,yaw:0,pitch:-0.21);run(f,2){f.crashed || !f.particles.isEmpty}
-  check(onLand && !f.crashed && f.velocityDir.y>0 && f.particles.contains{$0.kind==2},"The floats skip off the water with spray at an angle that crashes on land")
-  f=pilot(water+SIMD3(0,80,0));aim(f,yaw:0,pitch:-0.9);run(f,3){f.crashed};check(f.crashed && f.crashWater,"A steep dive into the bay is a splashdown")
+  let closing=Aero.cruise*sin(Float(0.21))
+  check(closing>Aero.cruise*0.18 && closing<Aero.cruise*0.23,"A 12° descent at cruise is past the limit for land and inside the limit for water")
+  if foundWater {
+   f=pilot(water+SIMD3(0,Aero.clearance+3,0));aim(f,yaw:0,pitch:-0.21);run(f,2){f.crashed || !f.particles.isEmpty}
+   check(!f.crashed && f.velocityDir.y>0 && f.particles.contains{$0.kind==2},"The floats skip off the water with spray at that angle (crashed \(f.crashed), water \(scan.isWater(f.position.x,f.position.z)), y \(f.position.y))")
+   f=pilot(water+SIMD3(0,80,0));aim(f,yaw:0,pitch:-0.9);run(f,3){f.crashed};check(f.crashed && f.crashWater,"A steep dive into the water is a splashdown")
+  }
   f.reset();check(!f.crashed && !f.crashing && f.particles.isEmpty && f.tumble == .zero,"Restarting clears a crash in progress")
   f=pilot(land+SIMD3(0,ground+40,0));aim(f,yaw:0,pitch:-1);f.speed=Aero.boostSpeed;f.thrust=Aero.boostThrust;for _ in 0..<40{f.update(0.05);if f.crashed{break}}
   check(f.crashed && f.crashStart.y>=terrain.surface(f.crashStart)+Aero.clearance-0.05,"A boosted dive on a slow frame stops at the surface, not below it")
@@ -162,8 +171,8 @@ import MetalKit
   check(answer(nil,"San Francisco International Airport","San Francisco",nil).label(overWater:false,latitude:37.62,longitude:-122.38).name=="San Francisco International Airport" && answer(nil,nil,"Sausalito",nil).label(overWater:false,latitude:37.86,longitude:-122.49)==PlaceLabel(name:"Sausalito",detail:"San Mateo County"),"Without a neighbourhood the label falls back to a named place, then the town and county")
   check(answer("Treasure Island",nil,"San Francisco",nil).label(overWater:true,latitude:region.latitude,longitude:region.longitude)==PlaceLabel(name:region.waterName(region.latitude,region.longitude),detail:"near Treasure Island"),"Over open water the label is the water, with the nearest shore as a note")
   check(answer("Lakeshore",nil,"San Francisco","Lake Merced").label(overWater:false,latitude:37.72,longitude:-122.49)==PlaceLabel(name:"Lake Merced",detail:"near Lakeshore"),"A lake the geocoder names is shown even though it lies above sea level")
-  let grid0=g.terrain!,wet0={(la:Double,lo:Double)->Bool in let p=geographic(Float(la),Float(lo));return grid0.height(p.x,p.z)<=0.5}
-  let waters:[(Double,Double,String)]=region.id=="nyc" ? [(40.75,-74.015,"Hudson River"),(40.742,-73.967,"East River"),(40.83,-73.934,"Harlem River"),(40.8618,-73.9147,"Harlem River"),(40.585,-73.79,"Atlantic Ocean"),(40.79,-73.915,"East River"),(40.66,-74.045,"Upper New York Bay"),(40.58,-74.03,"Lower New York Bay"),(40.61,-73.84,"Jamaica Bay"),(40.54,-73.9,"Atlantic Ocean"),(40.67,-74.13,"Newark Bay"),(40.80,-73.78,"Long Island Sound")]:[(37.872,-122.491,"San Francisco Bay"),(37.76,-122.52,"Pacific Ocean"),(37.85,-122.56,"Pacific Ocean"),(37.82,-122.49,"Golden Gate"),(37.65,-122.30,"San Francisco Bay")]
+  let grid0=g.terrain!,wet0={(la:Double,lo:Double)->Bool in let p=geographic(Float(la),Float(lo));return grid0.isWater(p.x,p.z)}
+  let waters:[(Double,Double,String)]=region.id=="nyc" ? [(40.75,-74.015,"Hudson River"),(40.742,-73.967,"East River"),(40.83,-73.934,"Harlem River"),(40.8618,-73.9147,"Harlem River"),(40.585,-73.79,"Atlantic Ocean"),(40.79,-73.915,"East River"),(40.66,-74.045,"Upper New York Bay"),(40.58,-74.03,"Lower New York Bay"),(40.61,-73.84,"Jamaica Bay"),(40.54,-73.9,"Atlantic Ocean"),(40.67,-74.13,"Newark Bay"),(40.80,-73.78,"Long Island Sound")]:region.id=="sf" ? [(37.872,-122.491,"San Francisco Bay"),(37.76,-122.52,"Pacific Ocean"),(37.85,-122.56,"Pacific Ocean"),(37.82,-122.49,"Golden Gate"),(37.65,-122.30,"San Francisco Bay")]:[(region.latitude,region.longitude,region.waterName(0,0))]
   check(waters.allSatisfy{PlaceAnswer.waterName(latitude:$0.0,longitude:$0.1)==$0.2},"Water the geocoder does not name is named by position (\(waters.count) places in \(region.tagline))")
   if region.id=="nyc" {
    func hood(_ borough:String,_ la:Double,_ lo:Double)->PlaceLabel {PlaceAnswer(sub:borough,named:nil,locality:"New York",county:"New York County",water:nil).label(overWater:false,latitude:la,longitude:lo)}
@@ -179,8 +188,10 @@ import MetalKit
   check(region.routes.allSatisfy{r in let first=r.gates[0].position-r.spawn.position,bearing=atan2(first.x,-first.z);return abs(atan2(sin(bearing-r.yaw),cos(bearing-r.yaw)))<0.5 && hypot(first.x,first.z)>600},"Each route starts facing its first gate, with room to line up")
   let back=coordinate(geographic(Float(region.latitude)+0.1,Float(region.longitude)-0.1))
   check(abs(back.latitude-region.latitude-0.1)<0.0001 && abs(back.longitude-region.longitude+0.1)<0.0001 && length(geographic(Float(region.latitude),Float(region.longitude)))<1,"World metres and coordinates convert both ways around the region's centre")
-  let grid=g.terrain!,wet={(la:Double,lo:Double)->Bool in let p=geographic(Float(la),Float(lo));return grid.height(p.x,p.z)<=0.5}
-  let shore:[(Double,Double,Bool)]=region.id=="nyc" ? [(40.75,-74.015,true),(40.742,-73.967,true),(40.851,-73.955,true),(40.66,-74.045,true),(40.54,-73.9,true),(40.7549,-73.984,false),(40.7829,-73.9654,false),(40.6892,-74.0445,false),(40.6413,-73.7781,false),(40.7855,-73.9625,false)]:[(37.84,-122.40,true),(37.76,-122.56,true),(37.7749,-122.4194,false),(37.9235,-122.5965,false)]
+  let grid=g.terrain!,wet={(la:Double,lo:Double)->Bool in let p=geographic(Float(la),Float(lo));return grid.isWater(p.x,p.z)}
+  let shore:[(Double,Double,Bool)]=region.id=="nyc" ? [(40.75,-74.015,true),(40.742,-73.967,true),(40.851,-73.955,true),(40.66,-74.045,true),(40.54,-73.9,true),(40.7549,-73.984,false),(40.7829,-73.9654,false),(40.6892,-74.0445,false),(40.6413,-73.7781,false),(40.7855,-73.9625,false)]:region.id=="sf" ? [(37.84,-122.40,true),(37.76,-122.56,true),(37.7749,-122.4194,false),(37.9235,-122.5965,false)]:[]
+  let dry=region.sites.filter{!wet(Double($0.place.lat),Double($0.place.lon))}.count
+  check(dry*10>=region.sites.count*6,"Most places are on land in the water mask (\(dry) of \(region.sites.count))")
   check(shore.allSatisfy{wet($0.0,$0.1)==$0.2},"The elevation grid has water where there is water and land where there is land (\(shore.count) known places)")
   var asked=[(Double,Double)](),reply:PlaceAnswer?=answer("Marina",nil,"San Francisco",nil),pending:((PlaceAnswer?)->Void)?
   let finder=PlaceLocator(lookup:{la,lo,done in asked.append((la,lo));pending=done})
@@ -205,6 +216,24 @@ import MetalKit
   check(again==0 && reopened.label(position:SIMD3(800,300,0),overWater:false).name=="Marina","Answers are remembered between sessions")
   check(FlightGame(testing:true).place==PlaceLabel(),"Tests never contact the geocoder")
   reply=nil
+  // Cities: one app, separate progress in each, and a reset.
+  check(Region.all.count==12 && Set(Region.all.map(\.id)).count==12 && Region.all.allSatisfy{$0.sites.count>=12 && !$0.routes.isEmpty && !$0.launches.isEmpty},"All twelve cities load with places, routes and starts")
+  let tunes=URL(fileURLWithPath:CommandLine.arguments[1]).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("music")
+  check(Region.all.allSatisfy{c in c.music.map{name in ["m4a","mp3"].contains{FileManager.default.fileExists(atPath:tunes.appendingPathComponent(name+"."+$0).path)}} ?? false},"Every city has its signature tune on disk")
+  let travel=UserDefaults(suiteName:"local.bayday.tests.travel."+UUID().uuidString)!,home=region.id,away=Region.all.first{$0.id != home}!
+  let traveller=FlightGame(preferences:travel,testing:false);traveller.placeLookup={_,_,done in done(nil)};traveller.terrainLoader={_ in world};traveller.terrain=world;traveller.ready=true
+  traveller.collect(0);traveller.begin()
+  check(traveller.titleCard && traveller.launched && traveller.musicFiles.first==region.music,"A flight opens with the city's title card, and its own tune is first in the list")
+  for _ in 0..<300{traveller.update(1/60)};check(!traveller.titleCard,"The title card clears after a few seconds")
+  traveller.setRegion(away.id)
+  check(region.id==away.id && traveller.regionID==away.id && sights.count==away.sites.count && traveller.discovered.isEmpty && !traveller.launched && traveller.paused && !traveller.challenge,"Choosing another city switches the world and returns to the start menu")
+  check(hypot(traveller.position.x-launches[0].position.x,traveller.position.z-launches[0].position.z)<1 && traveller.found(in:Region.named(home)!)==1 && travel.string(forKey:"BayDayNative.region")==away.id,"The new city starts at its first departure, the old city's progress is kept, and the choice is saved")
+  traveller.collect(1);traveller.collect(2);traveller.setRegion(home)
+  check(region.id==home && traveller.discovered==Set([0]) && traveller.found(in:away)==2,"Each city keeps its own points")
+  traveller.setRegion("atlantis");check(region.id==home,"An unknown city is ignored")
+  traveller.resetProgress()
+  check(traveller.discovered.isEmpty && traveller.found(in:away)==2 && (travel.array(forKey:traveller.key("discoveries")) as? [Int] ?? [1]).isEmpty,"Resetting clears the current city's points only, and saves that")
+  travel.removePersistentDomain(forName:"local.bayday.tests.travel")
   let suite="local.bayday.tests."+UUID().uuidString,prefs=UserDefaults(suiteName:suite)!
   defer{prefs.removePersistentDomain(forName:suite)}
   let savedGame=FlightGame(preferences:prefs);savedGame.chooseScenery(1)

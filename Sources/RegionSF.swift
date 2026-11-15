@@ -2,7 +2,7 @@ import Foundation
 
 // San Francisco Bay: the city, Marin, the Peninsula and the East Bay.
 extension Region {
- static let sanFrancisco=Region(id:"sf",appName:"Bay Day",tagline:"San Francisco Bay",latitude:37.76,longitude:-122.38,metresPerLatitude:110990,sites:sfSites,routes:sfRoutes,launches:sfLaunches,waterName:sfWater)
+ static let sanFrancisco=Region(id:"sf",name:"San Francisco",tagline:"San Francisco Bay",latitude:37.76,longitude:-122.38,metresPerLatitude:110990,sites:sfSites,routes:sfRoutes,launches:sfLaunches,waterName:sfWater,music:"bossa-antigua")
  private static let sfSites:[DiscoverySite]={
   var s=[DiscoverySite]()
   s.append(DiscoverySite("Golden Gate Bridge",37.8199,-122.4783,180,"THE GOLDEN GATE","That famous color is International Orange. The bridge connects San Francisco to Marin across the narrow entrance between the Pacific and the bay.","Follow the orange towers north from the Presidio.","https://www.goldengate.org/bridge/history-research/"))

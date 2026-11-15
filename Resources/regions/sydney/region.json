@@ -1,0 +1,240 @@
+{
+ "id": "sydney",
+ "name": "Sydney",
+ "country": "Australia",
+ "flag": "🇦🇺",
+ "tagline": "Sydney Harbour",
+ "latitude": -33.86,
+ "longitude": 151.21,
+ "water": "Sydney Harbour",
+ "music": "easy-lemon",
+ "greeting": "G'day",
+ "sites": [
+  {
+   "name": "Sydney Opera House",
+   "lat": -33.8568,
+   "lon": 151.2153,
+   "group": "THE HARBOUR",
+   "fact": "Designed by Jørn Utzon and opened in 1973, ten years later than planned. Its shells are covered in more than a million tiles.",
+   "hint": "The white sails on the point east of the Harbour Bridge.",
+   "source": "https://en.wikipedia.org/wiki/Sydney_Opera_House"
+  },
+  {
+   "name": "Sydney Harbour Bridge",
+   "lat": -33.8523,
+   "lon": 151.2108,
+   "group": "THE HARBOUR",
+   "fact": "Opened in 1932. Locals call the steel arch the Coathanger; its top is 134 metres above the water.",
+   "hint": "The steel arch across the harbour, beside the Opera House.",
+   "source": "https://en.wikipedia.org/wiki/Sydney_Harbour_Bridge"
+  },
+  {
+   "name": "Bondi Beach",
+   "lat": -33.8908,
+   "lon": 151.2743,
+   "group": "THE COAST",
+   "fact": "About a kilometre of sand on the Pacific. Its surf lifesaving club, founded in 1907, is among the oldest in the world.",
+   "hint": "The crescent beach on the ocean, east of the city.",
+   "source": "https://en.wikipedia.org/wiki/Bondi_Beach"
+  },
+  {
+   "name": "Sydney Tower",
+   "lat": -33.8704,
+   "lon": 151.2093,
+   "group": "THE CITY",
+   "fact": "At 309 metres, the tallest structure in Sydney. It opened to the public in 1981.",
+   "hint": "The golden turret on a thin shaft in the middle of the city.",
+   "source": "https://en.wikipedia.org/wiki/Sydney_Tower"
+  },
+  {
+   "name": "Darling Harbour",
+   "lat": -33.8748,
+   "lon": 151.2009,
+   "group": "THE CITY",
+   "fact": "Once a busy cargo port, rebuilt as a waterfront of museums, parks and promenades for Australia's bicentenary in 1988.",
+   "hint": "The narrow inlet on the western side of the city centre.",
+   "source": "https://en.wikipedia.org/wiki/Darling_Harbour"
+  },
+  {
+   "name": "Taronga Zoo",
+   "lat": -33.8433,
+   "lon": 151.2411,
+   "group": "THE HARBOUR",
+   "fact": "Opened in 1916 on the north shore of the harbour. Many visitors arrive by ferry.",
+   "hint": "On the wooded north shore, across the water from the Opera House.",
+   "source": "https://en.wikipedia.org/wiki/Taronga_Zoo_Sydney"
+  },
+  {
+   "name": "Manly",
+   "lat": -33.7969,
+   "lon": 151.2885,
+   "group": "THE COAST",
+   "fact": "A beach suburb on a neck of land between the harbour and the ocean, half an hour by ferry from the city.",
+   "hint": "Near North Head, at the northern side of the harbour entrance.",
+   "source": "https://en.wikipedia.org/wiki/Manly,_New_South_Wales"
+  },
+  {
+   "name": "Royal Botanic Garden",
+   "lat": -33.8642,
+   "lon": 151.2166,
+   "group": "THE HARBOUR",
+   "fact": "Established in 1816, which makes it the oldest scientific institution in Australia.",
+   "hint": "The gardens around the bay just east of the Opera House.",
+   "source": "https://en.wikipedia.org/wiki/Royal_Botanic_Garden,_Sydney"
+  },
+  {
+   "name": "Sydney Cricket Ground",
+   "lat": -33.8917,
+   "lon": 151.2247,
+   "group": "THE CITY",
+   "fact": "Cricket has been played on this ground since the middle of the 1800s.",
+   "hint": "The stadiums in Moore Park, south-east of the centre.",
+   "source": "https://en.wikipedia.org/wiki/Sydney_Cricket_Ground"
+  },
+  {
+   "name": "Sydney Airport",
+   "lat": -33.9399,
+   "lon": 151.1753,
+   "group": "BOTANY BAY",
+   "fact": "In use since 1920, one of the oldest continuously operating commercial airports in the world. Two of its runways reach out into Botany Bay.",
+   "hint": "On the north shore of Botany Bay, south of the city.",
+   "source": "https://en.wikipedia.org/wiki/Sydney_Airport"
+  },
+  {
+   "name": "South Head",
+   "lat": -33.8335,
+   "lon": 151.281,
+   "group": "THE HARBOUR",
+   "fact": "The southern headland of the harbour entrance. The red and white Hornby Lighthouse has guided ships in since 1858.",
+   "hint": "The tip of the peninsula past Watsons Bay, facing North Head.",
+   "source": "https://en.wikipedia.org/wiki/South_Head_(Sydney)"
+  },
+  {
+   "name": "Sydney Olympic Park",
+   "lat": -33.8474,
+   "lon": 151.0677,
+   "group": "WEST",
+   "fact": "Built for the 2000 Olympic Games on former industrial land beside the Parramatta River.",
+   "hint": "Far up the Parramatta River, west of the city.",
+   "source": "https://en.wikipedia.org/wiki/Sydney_Olympic_Park"
+  }
+ ],
+ "routes": [
+  {
+   "name": "Harbour run",
+   "subtitle": "Darling Harbour to Manly · 6 gates",
+   "spawn": {
+    "name": "Glebe",
+    "lat": -33.885,
+    "lon": 151.185,
+    "alt": 280
+   },
+   "gates": [
+    {
+     "name": "Darling Harbour",
+     "lat": -33.8748,
+     "lon": 151.2009,
+     "alt": 250
+    },
+    {
+     "name": "Sydney Harbour Bridge",
+     "lat": -33.8523,
+     "lon": 151.2108,
+     "alt": 250
+    },
+    {
+     "name": "Sydney Opera House",
+     "lat": -33.8568,
+     "lon": 151.2153,
+     "alt": 250
+    },
+    {
+     "name": "Taronga Zoo",
+     "lat": -33.8433,
+     "lon": 151.2411,
+     "alt": 250
+    },
+    {
+     "name": "South Head",
+     "lat": -33.8335,
+     "lon": 151.281,
+     "alt": 250
+    },
+    {
+     "name": "Manly",
+     "lat": -33.7969,
+     "lon": 151.2885,
+     "alt": 250
+    }
+   ]
+  },
+  {
+   "name": "City to surf",
+   "subtitle": "The Botanic Garden to Bondi · 5 gates",
+   "spawn": {
+    "name": "North Sydney",
+    "lat": -33.84,
+    "lon": 151.208,
+    "alt": 320
+   },
+   "gates": [
+    {
+     "name": "Royal Botanic Garden",
+     "lat": -33.8642,
+     "lon": 151.2166,
+     "alt": 250
+    },
+    {
+     "name": "Sydney Tower",
+     "lat": -33.8704,
+     "lon": 151.2093,
+     "alt": 250
+    },
+    {
+     "name": "Sydney Cricket Ground",
+     "lat": -33.8917,
+     "lon": 151.2247,
+     "alt": 250
+    },
+    {
+     "name": "Bondi Beach",
+     "lat": -33.8908,
+     "lon": 151.2743,
+     "alt": 250
+    },
+    {
+     "name": "South Head",
+     "lat": -33.8335,
+     "lon": 151.281,
+     "alt": 250
+    }
+   ]
+  }
+ ],
+ "launches": [
+  {
+   "name": "Sydney Harbour",
+   "lat": -33.845,
+   "lon": 151.225,
+   "alt": 250
+  },
+  {
+   "name": "The city",
+   "lat": -33.885,
+   "lon": 151.205,
+   "alt": 350
+  },
+  {
+   "name": "Bondi",
+   "lat": -33.9,
+   "lon": 151.26,
+   "alt": 260
+  },
+  {
+   "name": "Manly",
+   "lat": -33.81,
+   "lon": 151.29,
+   "alt": 260
+  }
+ ]
+}

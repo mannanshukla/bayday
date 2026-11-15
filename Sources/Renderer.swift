@@ -42,7 +42,8 @@ class FlightRenderer:NSObject,MTKViewDelegate {
   game.renderer=self;view.delegate=self
  }
  func load()throws {
-  game.terrain=try TerrainData(game.resource("height.bin"))
+  guard let grid=game.terrainLoader(region) else{throw NSError(domain:"Terrain",code:2,userInfo:[NSLocalizedDescriptionKey:"The elevation data for \(region.name) is missing"])}
+  game.terrain=grid
   aircraft=AircraftModel(device)
   var b=MeshBuilder();b.ellipsoid(.zero,SIMD3(repeating:0.5),SIMD3(1,0.85,0.25),segments:8,rings:6,kind:3);sparkle=b.mesh(device)
   b=MeshBuilder();b.box(.zero,SIMD3(1.5,0.16,0.9),Airframe.cream,kind:0);b.box(SIMD3(0,0.2,0),SIMD3(0.5,0.2,1.1),Airframe.red,kind:0);debris=b.mesh(device)
@@ -68,8 +69,8 @@ class FlightRenderer:NSObject,MTKViewDelegate {
   // heading: the light moves across the airframe as the aircraft turns.
   let toLocal=rotation(game.yaw,SIMD3(0,1,0)),sun=toLocal*SIMD4<Float>(-0.55,0.72,0.42,0)
   var u=Uniforms();u.vp=aircraftOverlayProjection(eye:game.cameraEye,tilt:game.cameraTilt,aspect);u.eyeTime=SIMD4(game.cameraEye,clock);u.sun=sun
-  // In the cockpit the map is turned and slid on screen; effects must follow it.
-  if game.cameraMode==2 {u.vp=cockpitClipTransform(roll:game.roll,pitch:game.pitch,aspect:aspect)*u.vp}
+  // The map picture is slid (and in the cockpit, turned) on screen; this layer follows it.
+  u.vp=screenClipTransform(mode:game.cameraMode,roll:game.roll,pitch:game.pitch,aspect:aspect)*u.vp
   // Close-up used to render the app icon artwork.
   if qaHero {let eye=SIMD3<Float>(0,2.2,30);u.vp=perspective(.pi/6,aspect)*lookAt(eye,SIMD3(0,-0.2,0));u.eyeTime=SIMD4(eye,clock);u.sun=SIMD4(-0.5,0.75,0.6,0)}
   enc.setRenderPipelineState(pipeline);enc.setDepthStencilState(solidDepth);enc.setCullMode(.none)

@@ -2,7 +2,7 @@ import Foundation
 
 // New York Harbor: Manhattan, Brooklyn, Queens, the Bronx, Staten Island, Jersey City and Newark.
 extension Region {
- static let newYork=Region(id:"nyc",appName:"Harbor Day",tagline:"New York Harbor",latitude:40.715,longitude:-73.985,metresPerLatitude:111049.5,sites:nycSites,routes:nycRoutes,launches:nycLaunches,waterName:nycWater,neighbourhoods:nycNeighbourhoods)
+ static let newYork=Region(id:"nyc",name:"New York",tagline:"New York Harbor",latitude:40.715,longitude:-73.985,metresPerLatitude:111049.5,sites:nycSites,routes:nycRoutes,launches:nycLaunches,waterName:nycWater,neighbourhoods:nycNeighbourhoods,music:"hep-cats")
  private static let nycSites:[DiscoverySite]={
   var s=[DiscoverySite]()
   s.append(DiscoverySite("Statue of Liberty",40.6892,-74.0445,150,"THE HARBOR","A gift from the people of France, dedicated in 1886. The copper skin has weathered to green, and the torch stands about 305 feet above the ground.","On a small island in the Upper Bay, southwest of the tip of Manhattan.","https://www.nps.gov/stli/"))
@@ -29,6 +29,16 @@ extension Region {
   s.append(DiscoverySite("St. George",40.6437,-74.0736,180,"STATEN ISLAND","The Staten Island Ferry lands here after a five-mile crossing from Manhattan. The ferry has been free since 1997.","The ferry terminal at the north-east tip of Staten Island.","https://en.wikipedia.org/wiki/St._George_Terminal"))
   s.append(DiscoverySite("Jersey City",40.7163,-74.0336,300,"NEW JERSEY","Across the Hudson from Lower Manhattan, former rail yards and docks became a district of offices and apartments. Its towers include 99 Hudson Street, the tallest building in New Jersey.","The cluster of towers on the west bank of the Hudson, opposite the World Trade Center.","https://en.wikipedia.org/wiki/Jersey_City,_New_Jersey"))
   s.append(DiscoverySite("Newark Airport",40.6895,-74.1745,220,"NEW JERSEY","Opened in 1928, it was the first major airport serving the New York area, and in the 1930s it was the busiest airport in the world.","West of Newark Bay, beside the container port.","https://en.wikipedia.org/wiki/Newark_Liberty_International_Airport"))
+  s.append(DiscoverySite("Hoboken Terminal",40.7350,-74.0280,180,"HOBOKEN","A rail and ferry terminal opened in 1907, clad in copper that has turned green. Trains, light rail, PATH and ferries still meet here.","On the Hudson shore at the south end of Hoboken, with a clock tower.","https://en.wikipedia.org/wiki/Hoboken_Terminal"))
+  s.append(DiscoverySite("Castle Point",40.7448,-74.0240,200,"HOBOKEN","The highest point in Hoboken, a bluff over the Hudson. Stevens Institute of Technology has stood here since 1870.","The green campus on a rise above the river, halfway up Hoboken's waterfront.","https://en.wikipedia.org/wiki/Castle_Point_(Hoboken)"))
+  s.append(DiscoverySite("Bronx Zoo",40.8506,-73.8770,220,"THE BRONX","Opened in 1899. At 265 acres it is one of the largest zoos in the United States, and the Bronx River runs through it.","In Bronx Park, in the middle of the borough.","https://en.wikipedia.org/wiki/Bronx_Zoo"))
+  s.append(DiscoverySite("New York Botanical Garden",40.8623,-73.8770,220,"THE BRONX","Founded in 1891 on 250 acres. Its great glasshouse, the Enid A. Haupt Conservatory, opened in 1902.","Just north of the Bronx Zoo: look for the white glass dome.","https://en.wikipedia.org/wiki/New_York_Botanical_Garden"))
+  s.append(DiscoverySite("Van Cortlandt Park",40.8972,-73.8860,240,"THE BRONX","More than 1,100 acres at the top of the Bronx. Its golf course opened in 1895 and was the first public course in the country.","The large park at the northern edge of the city.","https://en.wikipedia.org/wiki/Van_Cortlandt_Park"))
+  s.append(DiscoverySite("City Island",40.8470,-73.7870,180,"THE BRONX","An island about a mile and a half long at the western end of Long Island Sound, with a long tradition of boatbuilding and sailing. It is part of the Bronx.","A narrow island off the Bronx's eastern shore, reached by one bridge.","https://en.wikipedia.org/wiki/City_Island,_Bronx"))
+  s.append(DiscoverySite("Snug Harbor",40.6426,-74.1020,180,"STATEN ISLAND","Founded as a home for retired sailors, which opened in 1833. Its row of Greek Revival buildings is now a cultural center and botanical garden.","On Staten Island's north shore, west of the ferry terminal.","https://en.wikipedia.org/wiki/Sailors%27_Snug_Harbor"))
+  s.append(DiscoverySite("Bayonne Bridge",40.6420,-74.1420,220,"STATEN ISLAND","A steel arch opened in 1931 between Staten Island and Bayonne. Its 1,675-foot span was the longest steel arch in the world for more than 40 years.","The arch over the Kill Van Kull, at Staten Island's north-west corner.","https://en.wikipedia.org/wiki/Bayonne_Bridge"))
+  s.append(DiscoverySite("Todt Hill",40.6010,-74.1060,260,"STATEN ISLAND","At about 400 feet, the highest natural point in the five boroughs.","The wooded ridge in the middle of Staten Island.","https://en.wikipedia.org/wiki/Todt_Hill"))
+  s.append(DiscoverySite("Freshkills Park",40.5770,-74.1870,200,"STATEN ISLAND","Once the largest landfill in the world, closed in 2001. The park being built on its 2,200 acres will be almost three times the size of Central Park.","The grassy mounds and creeks on Staten Island's western shore.","https://en.wikipedia.org/wiki/Freshkills_Park"))
   return s
  }()
  private static let nycRoutes:[Route]={
@@ -78,6 +88,9 @@ extension Region {
   l.append(Place(name:"George Washington Bridge",lat:40.838,lon:-73.955,alt:260))
   l.append(Place(name:"Kennedy Airport & Jamaica Bay",lat:40.620,lon:-73.820,alt:250))
   l.append(Place(name:"Coney Island",lat:40.565,lon:-73.985,alt:200))
+  l.append(Place(name:"Hoboken",lat:40.740,lon:-74.022,alt:260))
+  l.append(Place(name:"The Bronx",lat:40.835,lon:-73.900,alt:300))
+  l.append(Place(name:"Staten Island",lat:40.615,lon:-74.100,alt:320))
   return l
  }()
  private static func nycWater(_ latitude:Double,_ longitude:Double)->String {

@@ -1,0 +1,241 @@
+{
+ "id": "tokyo",
+ "name": "Tokyo",
+ "country": "Japan",
+ "flag": "🇯🇵",
+ "tagline": "Tokyo Bay",
+ "latitude": 35.66,
+ "longitude": 139.76,
+ "water": "Tokyo Bay",
+ "music": "ishikari-lore",
+ "localName": "東京",
+ "greeting": "こんにちは",
+ "sites": [
+  {
+   "name": "Tokyo Tower",
+   "lat": 35.6586,
+   "lon": 139.7454,
+   "group": "MINATO",
+   "fact": "Completed in 1958 and 333 metres tall. It is painted white and international orange for air safety.",
+   "hint": "The orange and white lattice tower south of the Imperial Palace.",
+   "source": "https://en.wikipedia.org/wiki/Tokyo_Tower"
+  },
+  {
+   "name": "Tokyo Skytree",
+   "lat": 35.7101,
+   "lon": 139.8107,
+   "group": "SUMIDA",
+   "fact": "At 634 metres, the tallest tower in the world. It opened in 2012.",
+   "hint": "The very tall pale tower east of the Sumida River.",
+   "source": "https://en.wikipedia.org/wiki/Tokyo_Skytree"
+  },
+  {
+   "name": "Imperial Palace",
+   "lat": 35.6852,
+   "lon": 139.7528,
+   "group": "CHIYODA",
+   "fact": "The home of the Emperor, on the site of Edo Castle. The castle's moats and stone walls remain.",
+   "hint": "The green island of trees and moats in the middle of the city.",
+   "source": "https://en.wikipedia.org/wiki/Tokyo_Imperial_Palace"
+  },
+  {
+   "name": "Shibuya Crossing",
+   "lat": 35.6595,
+   "lon": 139.7005,
+   "group": "SHIBUYA",
+   "fact": "Often called the busiest pedestrian crossing in the world. Traffic stops in every direction at once and people cross all ways.",
+   "hint": "Outside Shibuya Station, in the west of the city.",
+   "source": "https://en.wikipedia.org/wiki/Shibuya_Crossing"
+  },
+  {
+   "name": "Sensō-ji",
+   "lat": 35.7148,
+   "lon": 139.7967,
+   "group": "ASAKUSA",
+   "fact": "Tokyo's oldest temple, founded in 645 according to tradition. A giant red lantern hangs in its Thunder Gate.",
+   "hint": "In Asakusa, near the Sumida River, a little west of the Skytree.",
+   "source": "https://en.wikipedia.org/wiki/Sens%C5%8D-ji"
+  },
+  {
+   "name": "Tokyo Station",
+   "lat": 35.6812,
+   "lon": 139.7671,
+   "group": "CHIYODA",
+   "fact": "The red-brick station building opened in 1914. Shinkansen bullet trains leave from here.",
+   "hint": "Just east of the Imperial Palace gardens.",
+   "source": "https://en.wikipedia.org/wiki/Tokyo_Station"
+  },
+  {
+   "name": "Shinjuku",
+   "lat": 35.6896,
+   "lon": 139.6917,
+   "group": "SHINJUKU",
+   "fact": "The twin-towered Tokyo Metropolitan Government Building opened in 1991. Shinjuku Station nearby is the busiest railway station in the world.",
+   "hint": "The cluster of skyscrapers in the west, north of Shibuya.",
+   "source": "https://en.wikipedia.org/wiki/Tokyo_Metropolitan_Government_Building"
+  },
+  {
+   "name": "Rainbow Bridge",
+   "lat": 35.6365,
+   "lon": 139.7633,
+   "group": "THE BAY",
+   "fact": "A suspension bridge across the northern part of Tokyo Bay, opened in 1993. It links the city to the man-made island of Odaiba.",
+   "hint": "The white suspension bridge over the harbour, south of Tokyo Tower.",
+   "source": "https://en.wikipedia.org/wiki/Rainbow_Bridge_(Tokyo)"
+  },
+  {
+   "name": "Meiji Shrine",
+   "lat": 35.6764,
+   "lon": 139.6993,
+   "group": "SHIBUYA",
+   "fact": "A Shinto shrine to Emperor Meiji, completed in 1920. The forest around it was planted with about 100,000 donated trees.",
+   "hint": "The dense forest between Shibuya and Shinjuku.",
+   "source": "https://en.wikipedia.org/wiki/Meiji_Shrine"
+  },
+  {
+   "name": "Haneda Airport",
+   "lat": 35.5494,
+   "lon": 139.7798,
+   "group": "THE BAY",
+   "fact": "Tokyo's main domestic airport and one of the busiest in the world, built on reclaimed land at the edge of the bay.",
+   "hint": "On the bay shore, well south of the city centre.",
+   "source": "https://en.wikipedia.org/wiki/Haneda_Airport"
+  },
+  {
+   "name": "Ueno Park",
+   "lat": 35.7148,
+   "lon": 139.7734,
+   "group": "TAITO",
+   "fact": "One of Japan's first public parks, established in 1873. It is known for its museums and its cherry blossom.",
+   "hint": "The park with a pond, north-east of the Imperial Palace.",
+   "source": "https://en.wikipedia.org/wiki/Ueno_Park"
+  },
+  {
+   "name": "Tokyo Dome",
+   "lat": 35.7056,
+   "lon": 139.7519,
+   "group": "BUNKYO",
+   "fact": "A stadium opened in 1988, home of the Yomiuri Giants baseball team. Its white roof is held up by air pressure.",
+   "hint": "The white dome north of the Imperial Palace.",
+   "source": "https://en.wikipedia.org/wiki/Tokyo_Dome"
+  }
+ ],
+ "routes": [
+  {
+   "name": "Bay to temple",
+   "subtitle": "Rainbow Bridge to Asakusa · 6 gates",
+   "spawn": {
+    "name": "Tokyo Bay",
+    "lat": 35.605,
+    "lon": 139.79,
+    "alt": 280
+   },
+   "gates": [
+    {
+     "name": "Rainbow Bridge",
+     "lat": 35.6365,
+     "lon": 139.7633,
+     "alt": 250
+    },
+    {
+     "name": "Tokyo Tower",
+     "lat": 35.6586,
+     "lon": 139.7454,
+     "alt": 250
+    },
+    {
+     "name": "Imperial Palace",
+     "lat": 35.6852,
+     "lon": 139.7528,
+     "alt": 250
+    },
+    {
+     "name": "Tokyo Station",
+     "lat": 35.6812,
+     "lon": 139.7671,
+     "alt": 250
+    },
+    {
+     "name": "Tokyo Skytree",
+     "lat": 35.7101,
+     "lon": 139.8107,
+     "alt": 250
+    },
+    {
+     "name": "Sensō-ji",
+     "lat": 35.7148,
+     "lon": 139.7967,
+     "alt": 250
+    }
+   ]
+  },
+  {
+   "name": "West side",
+   "subtitle": "Shibuya to Ueno · 5 gates",
+   "spawn": {
+    "name": "Meguro",
+    "lat": 35.63,
+    "lon": 139.705,
+    "alt": 350
+   },
+   "gates": [
+    {
+     "name": "Shibuya Crossing",
+     "lat": 35.6595,
+     "lon": 139.7005,
+     "alt": 250
+    },
+    {
+     "name": "Meiji Shrine",
+     "lat": 35.6764,
+     "lon": 139.6993,
+     "alt": 250
+    },
+    {
+     "name": "Shinjuku",
+     "lat": 35.6896,
+     "lon": 139.6917,
+     "alt": 250
+    },
+    {
+     "name": "Tokyo Dome",
+     "lat": 35.7056,
+     "lon": 139.7519,
+     "alt": 250
+    },
+    {
+     "name": "Ueno Park",
+     "lat": 35.7148,
+     "lon": 139.7734,
+     "alt": 250
+    }
+   ]
+  }
+ ],
+ "launches": [
+  {
+   "name": "Tokyo Bay",
+   "lat": 35.61,
+   "lon": 139.8,
+   "alt": 250
+  },
+  {
+   "name": "Shibuya",
+   "lat": 35.645,
+   "lon": 139.7,
+   "alt": 380
+  },
+  {
+   "name": "Asakusa",
+   "lat": 35.7,
+   "lon": 139.8,
+   "alt": 350
+  },
+  {
+   "name": "Haneda",
+   "lat": 35.56,
+   "lon": 139.81,
+   "alt": 250
+  }
+ ]
+}

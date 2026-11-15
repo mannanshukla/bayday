@@ -77,7 +77,7 @@ struct AppMark:View {
 }
 struct AeroLogo:View {
  var body:some View {
-  HStack(spacing:7){AppMark(size:26);Text(region.appName).font(.system(size:16,weight:.bold))}.padding(.leading,9).padding(.trailing,15).padding(.vertical,6).aeroCapsule()
+  HStack(spacing:7){AppMark(size:26);Text(appName).font(.system(size:16,weight:.bold))}.padding(.leading,9).padding(.trailing,15).padding(.vertical,6).aeroCapsule()
  }
 }
 // A brief white flash whenever the aircraft crashes.

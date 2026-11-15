@@ -2,7 +2,7 @@ import Foundation
 import simd
 let worldHalf:Float = 24640
 let worldSize:Float = 49280
-let metresLon=Float(region.metresPerLongitude),metresLat=Float(region.metresPerLatitude)
+var metresLon:Float {Float(region.metresPerLongitude)}
 func clamp<T:Comparable>(_ v:T,_ lo:T,_ hi:T)->T { min(hi,max(lo,v)) }
 // World metres from the region's centre: x east, -z north.
 func geographic(_ lat:Float,_ lon:Float)->SIMD3<Float> {SIMD3(Float((Double(lon)-region.longitude)*region.metresPerLongitude),0,Float(-(Double(lat)-region.latitude)*region.metresPerLatitude))}
@@ -22,12 +22,25 @@ func perspective(_ fov:Float,_ aspect:Float,_ near:Float=1)->simd_float4x4 {
 }
 struct TerrainData {
  var samples:[Int16]
- init(_ url:URL)throws { let d=try Data(contentsOf:url);guard d.count==1025*1025*2 else{throw NSError(domain:"Terrain",code:1,userInfo:[NSLocalizedDescriptionKey:"Invalid terrain data"])};samples=d.withUnsafeBytes{Array($0.bindMemory(to:Int16.self))} }
+ // Optional water mask, one bit per sample. Without one, anything at or below 0.5 m is water.
+ var water:[UInt8]?
+ init(_ url:URL)throws {
+  let d=try Data(contentsOf:url);guard d.count==1025*1025*2 else{throw NSError(domain:"Terrain",code:1,userInfo:[NSLocalizedDescriptionKey:"Invalid terrain data"])}
+  samples=d.withUnsafeBytes{Array($0.bindMemory(to:Int16.self))}
+  // The mask sits beside the grid: height.bin / water.bin, or height-<id>.bin / water-<id>.bin.
+  let mask=url.deletingLastPathComponent().appendingPathComponent(url.lastPathComponent.replacingOccurrences(of:"height",with:"water"))
+  if let m=try? Data(contentsOf:mask),m.count==(1025*1025+7)/8 {water=[UInt8](m)}
+ }
  func height(_ x:Float,_ z:Float)->Float {
   let u=clamp((x+worldHalf)/worldSize*1024,0,1023.999),v=clamp((z+worldHalf)/worldSize*1024,0,1023.999),i=Int(u),j=Int(v),a=u-Float(i),b=v-Float(j),k=j*1025+i
   return (Float(samples[k])*(1-a)*(1-b)+Float(samples[k+1])*a*(1-b)+Float(samples[k+1025])*(1-a)*b+Float(samples[k+1026])*a*b)*0.1
  }
  func surface(_ p:SIMD3<Float>)->Float {max(0,height(p.x,p.z))}
+ func isWater(_ x:Float,_ z:Float)->Bool {
+  guard let water else{return height(x,z)<=0.5}
+  let i=Int(clamp((x+worldHalf)/worldSize*1024,0,1024).rounded()),j=Int(clamp((z+worldHalf)/worldSize*1024,0,1024).rounded()),k=j*1025+i
+  return water[k>>3] & (1<<UInt8(k&7)) != 0
+ }
 }
 
 // MARK: Camera
@@ -67,24 +80,27 @@ func aircraftOverlayProjection(eye:SIMD3<Float>,tilt:Float,_ aspect:Float)->simd
  perspective(MapCamera.fieldOfView,aspect,0.5)*lookAt(eye,eye+MapCamera.view(tilt:tilt))
 }
 func aircraftOverlayProjection(_ mode:Int,_ aspect:Float,tilt:Float=70)->simd_float4x4 {aircraftOverlayProjection(eye:MapCamera.eye(mode,tilt:tilt),tilt:tilt,aspect)}
-// MapKit cannot roll or look above its tilt limit. In the cockpit the map picture itself is
-// turned against the bank and slid down as the nose rises, with sky behind it, so its far
-// edge reads as the horizon. Returns the rotation (radians, counter-clockwise), the downward
-// slide as a fraction of the view height, and the scale that keeps the corners covered.
-func cockpitHorizon(roll:Float,pitch:Float,aspect:Float)->(angle:Float,slide:Float,cover:Float) {
+// MapKit cannot roll, and cannot look higher than 20° below level, so the horizon is never
+// in its picture. To look ahead rather than down, the map picture is slid down the screen
+// with sky behind it, and its far edge reads as the horizon. In the cockpit the picture also
+// turns against the bank and slides further as the nose rises. Returns the rotation (radians,
+// counter-clockwise), the downward slide as a fraction of the view height, and the scale
+// that keeps the corners covered.
+func screenHorizon(mode:Int,roll:Float,pitch:Float,aspect:Float)->(angle:Float,slide:Float,cover:Float) {
+ guard mode==2 else{return (0,0.15,1)}
  let angle=roll*0.6,slide=0.2+clamp(pitch,-0.5,1)*0.3
  return (angle,slide,cos(abs(angle))+max(aspect,1/aspect)*sin(abs(angle)))
+}
+// The same turn and slide as a transform of clip space, so the aircraft layer stays
+// registered with the scenery.
+func screenClipTransform(mode:Int,roll:Float,pitch:Float,aspect:Float)->simd_float4x4 {
+ let h=screenHorizon(mode:mode,roll:roll,pitch:pitch,aspect:aspect)
+ let stretch=simd_float4x4(diagonal:SIMD4(aspect,1,1,1)),squeeze=simd_float4x4(diagonal:SIMD4(1/aspect,1,1,1)),cover=simd_float4x4(diagonal:SIMD4(h.cover,h.cover,1,1))
+ return translation(SIMD3(0,-2*h.slide,0))*squeeze*rotation(h.angle,SIMD3(0,0,1))*stretch*cover
 }
 // One camera for both layers. `eye` is where the camera really is after every adjustment,
 // and `local` is that position in the aircraft's heading frame; the map and the aircraft
 // layer are both drawn from it, so they cannot disagree.
-// The cockpit's screen-space turn and slide of the map (cockpitHorizon), as a transform of
-// clip space, so effects drawn by the aircraft layer stay registered with the scenery.
-func cockpitClipTransform(roll:Float,pitch:Float,aspect:Float)->simd_float4x4 {
- let h=cockpitHorizon(roll:roll,pitch:pitch,aspect:aspect)
- let stretch=simd_float4x4(diagonal:SIMD4(aspect,1,1,1)),squeeze=simd_float4x4(diagonal:SIMD4(1/aspect,1,1,1)),cover=simd_float4x4(diagonal:SIMD4(h.cover,h.cover,1,1))
- return translation(SIMD3(0,-2*h.slide,0))*squeeze*rotation(h.angle,SIMD3(0,0,1))*stretch*cover
-}
 struct CameraSolution {var eye:SIMD3<Float>,local:SIMD3<Float>,centre:SIMD3<Float>,distance:Float,tilt:Float}
 extension CameraSolution {
  // Acceptable to MapKit at its solved distance, and clear of the terrain.

@@ -83,7 +83,7 @@ extension FlightGame {
 
  // MARK: Collision
  func terrainNormal(_ p:SIMD3<Float>)->SIMD3<Float> {
-  guard let t=terrain,t.height(p.x,p.z)>0 else{return SIMD3(0,1,0)}
+  guard let t=terrain,!t.isWater(p.x,p.z) else{return SIMD3(0,1,0)}
   let e:Float=24
   return normalize(SIMD3(t.surface(SIMD3(p.x-e,0,p.z))-t.surface(SIMD3(p.x+e,0,p.z)),2*e,t.surface(SIMD3(p.x,0,p.z-e))-t.surface(SIMD3(p.x,0,p.z+e))))
  }
@@ -104,7 +104,7 @@ extension FlightGame {
   let depth=terrain.surface(p)+clearance-p.y
   guard depth>0 else{return nil}
   let n=terrainNormal(p)
-  return Contact(normal:n,depth:depth*n.y,water:terrain.height(p.x,p.z)<=0.5)
+  return Contact(normal:n,depth:depth*n.y,water:terrain.isWater(p.x,p.z))
  }
  func impact(_ c:Contact){
   let v=velocityDir*speed,closing = -dot(v,c.normal)

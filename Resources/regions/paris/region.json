@@ -1,0 +1,240 @@
+{
+ "id": "paris",
+ "name": "Paris",
+ "country": "France",
+ "flag": "🇫🇷",
+ "tagline": "The Seine",
+ "latitude": 48.858,
+ "longitude": 2.33,
+ "water": "the Seine",
+ "music": "parisian",
+ "greeting": "Bonjour",
+ "sites": [
+  {
+   "name": "Eiffel Tower",
+   "lat": 48.8584,
+   "lon": 2.2945,
+   "group": "LEFT BANK",
+   "fact": "Built for the 1889 World's Fair and meant to stand for only 20 years. It was the tallest structure in the world until 1930, and with its antennas it now reaches 330 metres.",
+   "hint": "The iron tower beside the Seine, at the end of the Champ de Mars.",
+   "source": "https://en.wikipedia.org/wiki/Eiffel_Tower"
+  },
+  {
+   "name": "Arc de Triomphe",
+   "lat": 48.8738,
+   "lon": 2.295,
+   "group": "RIGHT BANK",
+   "fact": "Ordered by Napoleon in 1806 and finished in 1836. Twelve avenues meet at its roundabout.",
+   "hint": "At the top of the Champs-Élysées, in the middle of a star of avenues.",
+   "source": "https://en.wikipedia.org/wiki/Arc_de_Triomphe"
+  },
+  {
+   "name": "Louvre",
+   "lat": 48.8606,
+   "lon": 2.3376,
+   "group": "RIGHT BANK",
+   "fact": "A royal palace that became a museum in 1793. The glass pyramid in its courtyard was added in 1989.",
+   "hint": "The long palace on the right bank, with a glass pyramid in its courtyard.",
+   "source": "https://en.wikipedia.org/wiki/Louvre"
+  },
+  {
+   "name": "Notre-Dame",
+   "lat": 48.853,
+   "lon": 2.3499,
+   "group": "THE ISLANDS",
+   "fact": "Begun in 1163 on an island in the Seine. It reopened in December 2024 after the fire of 2019.",
+   "hint": "On the Île de la Cité, the larger of the two islands in the river.",
+   "source": "https://en.wikipedia.org/wiki/Notre-Dame_de_Paris"
+  },
+  {
+   "name": "Sacré-Cœur",
+   "lat": 48.8867,
+   "lon": 2.3431,
+   "group": "MONTMARTRE",
+   "fact": "A white basilica on the hill of Montmartre, the highest point in Paris. It was completed in 1914.",
+   "hint": "The white domes on the hill in the north of the city.",
+   "source": "https://en.wikipedia.org/wiki/Sacr%C3%A9-C%C5%93ur,_Paris"
+  },
+  {
+   "name": "Les Invalides",
+   "lat": 48.8566,
+   "lon": 2.3125,
+   "group": "LEFT BANK",
+   "fact": "Founded by Louis XIV in 1670 as a home for old soldiers. Napoleon's tomb lies under the golden dome.",
+   "hint": "The golden dome south of the river, east of the Eiffel Tower.",
+   "source": "https://en.wikipedia.org/wiki/Les_Invalides"
+  },
+  {
+   "name": "Panthéon",
+   "lat": 48.8462,
+   "lon": 2.3464,
+   "group": "LEFT BANK",
+   "fact": "Finished in 1790 as a church and soon made a resting place for great French citizens, among them Voltaire, Victor Hugo and Marie Curie.",
+   "hint": "The dome on the hill of the Latin Quarter, south of Notre-Dame.",
+   "source": "https://en.wikipedia.org/wiki/Panth%C3%A9on"
+  },
+  {
+   "name": "Montparnasse Tower",
+   "lat": 48.8421,
+   "lon": 2.322,
+   "group": "LEFT BANK",
+   "fact": "A 210-metre office tower completed in 1973. It was so unpopular that the city banned tall buildings in the centre soon after.",
+   "hint": "The lone dark tower south-west of the Luxembourg Garden.",
+   "source": "https://en.wikipedia.org/wiki/Tour_Montparnasse"
+  },
+  {
+   "name": "La Défense",
+   "lat": 48.8925,
+   "lon": 2.236,
+   "group": "WEST",
+   "fact": "The business district west of the city. The Grande Arche, opened in 1989, lines up with the Arc de Triomphe and the Louvre.",
+   "hint": "The cluster of towers west of the Arc de Triomphe, across the river.",
+   "source": "https://en.wikipedia.org/wiki/La_D%C3%A9fense"
+  },
+  {
+   "name": "Place de la Concorde",
+   "lat": 48.8656,
+   "lon": 2.3212,
+   "group": "RIGHT BANK",
+   "fact": "The largest square in Paris. Its Egyptian obelisk, about 3,300 years old, came from Luxor in the 1830s.",
+   "hint": "The open square at the foot of the Champs-Élysées, by the river.",
+   "source": "https://en.wikipedia.org/wiki/Place_de_la_Concorde"
+  },
+  {
+   "name": "Stade de France",
+   "lat": 48.9245,
+   "lon": 2.3601,
+   "group": "NORTH",
+   "fact": "The national stadium, built for the 1998 World Cup, with room for about 80,000.",
+   "hint": "The white ring of a stadium in Saint-Denis, north of the city.",
+   "source": "https://en.wikipedia.org/wiki/Stade_de_France"
+  },
+  {
+   "name": "Bois de Boulogne",
+   "lat": 48.862,
+   "lon": 2.249,
+   "group": "WEST",
+   "fact": "A royal hunting ground turned into a park in the 1850s. It is about two and a half times the size of New York's Central Park.",
+   "hint": "The big wood along the western edge of the city.",
+   "source": "https://en.wikipedia.org/wiki/Bois_de_Boulogne"
+  }
+ ],
+ "routes": [
+  {
+   "name": "Along the Seine",
+   "subtitle": "Notre-Dame to the Bois de Boulogne · 6 gates",
+   "spawn": {
+    "name": "Bercy",
+    "lat": 48.835,
+    "lon": 2.385,
+    "alt": 300
+   },
+   "gates": [
+    {
+     "name": "Notre-Dame",
+     "lat": 48.853,
+     "lon": 2.3499,
+     "alt": 250
+    },
+    {
+     "name": "Louvre",
+     "lat": 48.8606,
+     "lon": 2.3376,
+     "alt": 250
+    },
+    {
+     "name": "Place de la Concorde",
+     "lat": 48.8656,
+     "lon": 2.3212,
+     "alt": 250
+    },
+    {
+     "name": "Les Invalides",
+     "lat": 48.8566,
+     "lon": 2.3125,
+     "alt": 250
+    },
+    {
+     "name": "Eiffel Tower",
+     "lat": 48.8584,
+     "lon": 2.2945,
+     "alt": 250
+    },
+    {
+     "name": "Bois de Boulogne",
+     "lat": 48.862,
+     "lon": 2.249,
+     "alt": 250
+    }
+   ]
+  },
+  {
+   "name": "The grand axis",
+   "subtitle": "The Louvre to La Défense, then Montmartre · 5 gates",
+   "spawn": {
+    "name": "Bastille",
+    "lat": 48.853,
+    "lon": 2.37,
+    "alt": 320
+   },
+   "gates": [
+    {
+     "name": "Louvre",
+     "lat": 48.8606,
+     "lon": 2.3376,
+     "alt": 250
+    },
+    {
+     "name": "Place de la Concorde",
+     "lat": 48.8656,
+     "lon": 2.3212,
+     "alt": 250
+    },
+    {
+     "name": "Arc de Triomphe",
+     "lat": 48.8738,
+     "lon": 2.295,
+     "alt": 250
+    },
+    {
+     "name": "La Défense",
+     "lat": 48.8925,
+     "lon": 2.236,
+     "alt": 250
+    },
+    {
+     "name": "Sacré-Cœur",
+     "lat": 48.8867,
+     "lon": 2.3431,
+     "alt": 250
+    }
+   ]
+  }
+ ],
+ "launches": [
+  {
+   "name": "Eiffel Tower",
+   "lat": 48.845,
+   "lon": 2.29,
+   "alt": 350
+  },
+  {
+   "name": "Île de la Cité",
+   "lat": 48.842,
+   "lon": 2.35,
+   "alt": 300
+  },
+  {
+   "name": "Montmartre",
+   "lat": 48.875,
+   "lon": 2.34,
+   "alt": 400
+  },
+  {
+   "name": "La Défense",
+   "lat": 48.885,
+   "lon": 2.215,
+   "alt": 350
+  }
+ ]
+}

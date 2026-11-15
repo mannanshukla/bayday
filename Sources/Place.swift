@@ -27,7 +27,9 @@ struct PlaceAnswer:Codable,Equatable {
 }
 final class PlaceLocator {
  typealias Lookup=(_ latitude:Double,_ longitude:Double,_ done:@escaping(PlaceAnswer?)->Void)->Void
- static let cell:Float=300,interval:Double=3,storeKey=region.id=="sf" ? "BayDayNative.places":"BayDayNative.places."+region.id
+ static let cell:Float=300,interval:Double=3
+ // Answers are keyed by world square, so each region keeps its own.
+ let storeKey=region.id=="sf" ? "BayDayNative.places":"BayDayNative.places."+region.id
  private let lookup:Lookup,store:UserDefaults?
  private var busy=false,nextTime:Double=0,retry:Double=10
  // Answers are kept per 300 m square and saved, so ground already flown over needs no request.
@@ -35,7 +37,7 @@ final class PlaceLocator {
  private(set) var requests=0
  init(store:UserDefaults?=nil,lookup:Lookup?=nil){
   self.store=store;self.lookup=lookup ?? PlaceLocator.geocode
-  if let data=store?.data(forKey:PlaceLocator.storeKey),let saved=try? JSONDecoder().decode([String:PlaceAnswer].self,from:data){answers=saved}
+  if let data=store?.data(forKey:storeKey),let saved=try? JSONDecoder().decode([String:PlaceAnswer].self,from:data){answers=saved}
  }
  static func key(_ p:SIMD3<Float>)->String {"\(Int(floorf(p.x/cell))),\(Int(floorf(p.z/cell)))"}
  // Asks about the square the aircraft is in, at most once every few seconds, and waits
@@ -51,7 +53,7 @@ final class PlaceLocator {
    guard let answer else{self.nextTime=now+self.retry;self.retry=min(120,self.retry*2);return}
    self.retry=10;self.nextTime=now+PlaceLocator.interval;self.answers[key]=answer
    if self.answers.count>6000 {self.answers.removeAll();self.answers[key]=answer}
-   if self.answers.count%8==0,let data=try? JSONEncoder().encode(self.answers){self.store?.set(data,forKey:PlaceLocator.storeKey)}
+   if self.answers.count%8==0,let data=try? JSONEncoder().encode(self.answers){self.store?.set(data,forKey:self.storeKey)}
    done()
   }
  }

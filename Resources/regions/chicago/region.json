@@ -1,0 +1,239 @@
+{
+ "id": "chicago",
+ "name": "Chicago",
+ "country": "United States",
+ "flag": "🇺🇸",
+ "tagline": "Lake Michigan",
+ "latitude": 41.88,
+ "longitude": -87.66,
+ "water": "Lake Michigan",
+ "music": "bass-walker",
+ "sites": [
+  {
+   "name": "Willis Tower",
+   "lat": 41.8789,
+   "lon": -87.6359,
+   "group": "THE LOOP",
+   "fact": "Completed in 1973 as the Sears Tower. At 442 metres it was the tallest building in the world for 25 years.",
+   "hint": "The dark stepped tower with two white antennas, west of the Loop.",
+   "source": "https://en.wikipedia.org/wiki/Willis_Tower"
+  },
+  {
+   "name": "Cloud Gate",
+   "lat": 41.8827,
+   "lon": -87.6233,
+   "group": "THE LOOP",
+   "fact": "A polished steel sculpture in Millennium Park, nicknamed the Bean. It weighs about 110 tons.",
+   "hint": "In Millennium Park, between the towers and the lake.",
+   "source": "https://en.wikipedia.org/wiki/Cloud_Gate"
+  },
+  {
+   "name": "Navy Pier",
+   "lat": 41.8917,
+   "lon": -87.6005,
+   "group": "THE LAKEFRONT",
+   "fact": "A pier more than 3,000 feet long, opened in 1916. Its Ferris wheel recalls the very first one, built in Chicago for the 1893 World's Fair.",
+   "hint": "The long pier into the lake, just north of the river mouth.",
+   "source": "https://en.wikipedia.org/wiki/Navy_Pier"
+  },
+  {
+   "name": "Wrigley Field",
+   "lat": 41.9484,
+   "lon": -87.6553,
+   "group": "NORTH SIDE",
+   "fact": "Home of the Cubs since 1916 and the second-oldest ballpark in the major leagues. Ivy covers the outfield wall.",
+   "hint": "A ballpark among houses on the North Side.",
+   "source": "https://en.wikipedia.org/wiki/Wrigley_Field"
+  },
+  {
+   "name": "Soldier Field",
+   "lat": 41.8623,
+   "lon": -87.6167,
+   "group": "THE LAKEFRONT",
+   "fact": "Opened in 1924 as a memorial to American soldiers. The Bears have played here since 1971.",
+   "hint": "The stadium with classical colonnades on the lakefront, south of the Loop.",
+   "source": "https://en.wikipedia.org/wiki/Soldier_Field"
+  },
+  {
+   "name": "875 North Michigan Avenue",
+   "lat": 41.8988,
+   "lon": -87.6229,
+   "group": "NEAR NORTH",
+   "fact": "Completed in 1969 and long known as the John Hancock Center. The X-shaped braces on its outside help hold it up.",
+   "hint": "The dark tapering tower with crossed braces, north of the river.",
+   "source": "https://en.wikipedia.org/wiki/875_North_Michigan_Avenue"
+  },
+  {
+   "name": "Lincoln Park Zoo",
+   "lat": 41.9211,
+   "lon": -87.634,
+   "group": "NORTH SIDE",
+   "fact": "Founded in 1868 and still free to enter, one of the oldest zoos in North America.",
+   "hint": "In the long lakefront park north of downtown.",
+   "source": "https://en.wikipedia.org/wiki/Lincoln_Park_Zoo"
+  },
+  {
+   "name": "Adler Planetarium",
+   "lat": 41.8663,
+   "lon": -87.6068,
+   "group": "THE LAKEFRONT",
+   "fact": "The first planetarium in the Western Hemisphere, opened in 1930 at the tip of a peninsula in the lake.",
+   "hint": "At the end of the spit of land east of Soldier Field.",
+   "source": "https://en.wikipedia.org/wiki/Adler_Planetarium"
+  },
+  {
+   "name": "University of Chicago",
+   "lat": 41.7886,
+   "lon": -87.5987,
+   "group": "SOUTH SIDE",
+   "fact": "Founded in 1890. The first controlled nuclear chain reaction took place here in 1942, under the stands of a football field.",
+   "hint": "Grey stone quadrangles in Hyde Park, on the South Side.",
+   "source": "https://en.wikipedia.org/wiki/University_of_Chicago"
+  },
+  {
+   "name": "Midway Airport",
+   "lat": 41.7868,
+   "lon": -87.7522,
+   "group": "SOUTH SIDE",
+   "fact": "Until O'Hare opened to airlines in 1955, this one square mile was the busiest airport in the world.",
+   "hint": "A square airfield hemmed in by houses, south-west of the Loop.",
+   "source": "https://en.wikipedia.org/wiki/Midway_International_Airport"
+  },
+  {
+   "name": "United Center",
+   "lat": 41.8807,
+   "lon": -87.6742,
+   "group": "WEST SIDE",
+   "fact": "Home of the Bulls and the Blackhawks since 1994. A statue of Michael Jordan stands inside.",
+   "hint": "The big arena west of the Loop.",
+   "source": "https://en.wikipedia.org/wiki/United_Center"
+  },
+  {
+   "name": "Wolf Point",
+   "lat": 41.887,
+   "lon": -87.637,
+   "group": "THE LOOP",
+   "fact": "Where the branches of the Chicago River meet. Engineers reversed the river in 1900 so that it flows away from Lake Michigan, the city's drinking water.",
+   "hint": "Where the river splits in three, at the north-west corner of the Loop.",
+   "source": "https://en.wikipedia.org/wiki/Wolf_Point,_Chicago"
+  }
+ ],
+ "routes": [
+  {
+   "name": "Lakefront",
+   "subtitle": "Soldier Field to Wrigley Field · 6 gates",
+   "spawn": {
+    "name": "Burnham Harbor",
+    "lat": 41.835,
+    "lon": -87.6,
+    "alt": 300
+   },
+   "gates": [
+    {
+     "name": "Soldier Field",
+     "lat": 41.8623,
+     "lon": -87.6167,
+     "alt": 250
+    },
+    {
+     "name": "Adler Planetarium",
+     "lat": 41.8663,
+     "lon": -87.6068,
+     "alt": 250
+    },
+    {
+     "name": "Navy Pier",
+     "lat": 41.8917,
+     "lon": -87.6005,
+     "alt": 250
+    },
+    {
+     "name": "875 North Michigan Avenue",
+     "lat": 41.8988,
+     "lon": -87.6229,
+     "alt": 250
+    },
+    {
+     "name": "Lincoln Park Zoo",
+     "lat": 41.9211,
+     "lon": -87.634,
+     "alt": 250
+    },
+    {
+     "name": "Wrigley Field",
+     "lat": 41.9484,
+     "lon": -87.6553,
+     "alt": 250
+    }
+   ]
+  },
+  {
+   "name": "The Loop and west",
+   "subtitle": "Cloud Gate to Midway · 5 gates",
+   "spawn": {
+    "name": "Grant Park",
+    "lat": 41.865,
+    "lon": -87.6,
+    "alt": 450
+   },
+   "gates": [
+    {
+     "name": "Cloud Gate",
+     "lat": 41.8827,
+     "lon": -87.6233,
+     "alt": 250
+    },
+    {
+     "name": "Willis Tower",
+     "lat": 41.8789,
+     "lon": -87.6359,
+     "alt": 250
+    },
+    {
+     "name": "Wolf Point",
+     "lat": 41.887,
+     "lon": -87.637,
+     "alt": 250
+    },
+    {
+     "name": "United Center",
+     "lat": 41.8807,
+     "lon": -87.6742,
+     "alt": 250
+    },
+    {
+     "name": "Midway Airport",
+     "lat": 41.7868,
+     "lon": -87.7522,
+     "alt": 250
+    }
+   ]
+  }
+ ],
+ "launches": [
+  {
+   "name": "Lake Michigan",
+   "lat": 41.87,
+   "lon": -87.59,
+   "alt": 260
+  },
+  {
+   "name": "The Loop",
+   "lat": 41.858,
+   "lon": -87.63,
+   "alt": 550
+  },
+  {
+   "name": "North Side",
+   "lat": 41.93,
+   "lon": -87.64,
+   "alt": 350
+  },
+  {
+   "name": "Midway",
+   "lat": 41.8,
+   "lon": -87.74,
+   "alt": 350
+  }
+ ]
+}

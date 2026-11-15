@@ -1,0 +1,241 @@
+{
+ "id": "rome",
+ "name": "Rome",
+ "country": "Italy",
+ "flag": "🇮🇹",
+ "tagline": "The Tiber",
+ "latitude": 41.9,
+ "longitude": 12.48,
+ "water": "the Tiber",
+ "music": "laid-back-guitars",
+ "localName": "Roma",
+ "greeting": "Ciao",
+ "sites": [
+  {
+   "name": "Colosseum",
+   "lat": 41.8902,
+   "lon": 12.4922,
+   "group": "ANCIENT ROME",
+   "fact": "Opened in AD 80. It held around 50,000 spectators and is still the largest amphitheatre ever built.",
+   "hint": "The great oval ruin east of the Forum.",
+   "source": "https://en.wikipedia.org/wiki/Colosseum"
+  },
+  {
+   "name": "St. Peter's Basilica",
+   "lat": 41.9022,
+   "lon": 12.4539,
+   "group": "VATICAN",
+   "fact": "The dome, designed by Michelangelo, rises about 136 metres. The present church was completed in 1626.",
+   "hint": "The huge dome west of the Tiber, behind an oval square.",
+   "source": "https://en.wikipedia.org/wiki/St._Peter%27s_Basilica"
+  },
+  {
+   "name": "Pantheon",
+   "lat": 41.8986,
+   "lon": 12.4769,
+   "group": "CENTRE",
+   "fact": "Completed around AD 126. Its dome is still the largest unreinforced concrete dome in the world, open to the sky at the top.",
+   "hint": "A low grey dome in the old centre, east of Piazza Navona.",
+   "source": "https://en.wikipedia.org/wiki/Pantheon,_Rome"
+  },
+  {
+   "name": "Trevi Fountain",
+   "lat": 41.9009,
+   "lon": 12.4833,
+   "group": "CENTRE",
+   "fact": "Finished in 1762. Tradition says a coin thrown over your shoulder means you will return to Rome.",
+   "hint": "In a small square in the old centre, east of the Pantheon.",
+   "source": "https://en.wikipedia.org/wiki/Trevi_Fountain"
+  },
+  {
+   "name": "Roman Forum",
+   "lat": 41.8925,
+   "lon": 12.4853,
+   "group": "ANCIENT ROME",
+   "fact": "The centre of public life in ancient Rome: markets, temples, courts and speeches, for about a thousand years.",
+   "hint": "The field of ruins between the Colosseum and the white Vittoriano.",
+   "source": "https://en.wikipedia.org/wiki/Roman_Forum"
+  },
+  {
+   "name": "Circus Maximus",
+   "lat": 41.8861,
+   "lon": 12.4851,
+   "group": "ANCIENT ROME",
+   "fact": "A chariot-racing track about 600 metres long that could hold some 150,000 people.",
+   "hint": "The long grassy hollow south of the Palatine Hill.",
+   "source": "https://en.wikipedia.org/wiki/Circus_Maximus"
+  },
+  {
+   "name": "Castel Sant'Angelo",
+   "lat": 41.9031,
+   "lon": 12.4663,
+   "group": "VATICAN",
+   "fact": "Built as the tomb of the emperor Hadrian, finished in AD 139, and later used by the popes as a fortress.",
+   "hint": "The round fortress on the Tiber, east of St. Peter's.",
+   "source": "https://en.wikipedia.org/wiki/Castel_Sant%27Angelo"
+  },
+  {
+   "name": "Piazza Navona",
+   "lat": 41.8992,
+   "lon": 12.4731,
+   "group": "CENTRE",
+   "fact": "The long oval follows a stadium built by the emperor Domitian. Bernini's Fountain of the Four Rivers stands in the middle.",
+   "hint": "A long narrow square west of the Pantheon.",
+   "source": "https://en.wikipedia.org/wiki/Piazza_Navona"
+  },
+  {
+   "name": "Spanish Steps",
+   "lat": 41.906,
+   "lon": 12.4828,
+   "group": "CENTRE",
+   "fact": "135 steps, built in the 1720s to link the square below with the church above.",
+   "hint": "Below a twin-towered church, north of the Trevi Fountain.",
+   "source": "https://en.wikipedia.org/wiki/Spanish_Steps"
+  },
+  {
+   "name": "Villa Borghese",
+   "lat": 41.9142,
+   "lon": 12.4853,
+   "group": "NORTH",
+   "fact": "A landscape park of about 80 hectares, laid out in the 1600s around the Borghese family's villa.",
+   "hint": "The big park north of the Spanish Steps.",
+   "source": "https://en.wikipedia.org/wiki/Villa_Borghese_gardens"
+  },
+  {
+   "name": "Vittoriano",
+   "lat": 41.8946,
+   "lon": 12.4831,
+   "group": "CENTRE",
+   "fact": "A white marble monument to Victor Emmanuel II, the first king of united Italy, completed in 1935. Romans nicknamed it the typewriter.",
+   "hint": "The very white monument at the north end of the Forum.",
+   "source": "https://en.wikipedia.org/wiki/Victor_Emmanuel_II_Monument"
+  },
+  {
+   "name": "Stadio Olimpico",
+   "lat": 41.9341,
+   "lon": 12.4547,
+   "group": "NORTH",
+   "fact": "Rome's main stadium, home to both Roma and Lazio. It hosted the 1960 Olympic Games.",
+   "hint": "Beside a bend of the Tiber in the north of the city.",
+   "source": "https://en.wikipedia.org/wiki/Stadio_Olimpico"
+  }
+ ],
+ "routes": [
+  {
+   "name": "Ancient Rome",
+   "subtitle": "Circus Maximus to Piazza Navona · 6 gates",
+   "spawn": {
+    "name": "Aventine",
+    "lat": 41.872,
+    "lon": 12.486,
+    "alt": 280
+   },
+   "gates": [
+    {
+     "name": "Circus Maximus",
+     "lat": 41.8861,
+     "lon": 12.4851,
+     "alt": 250
+    },
+    {
+     "name": "Colosseum",
+     "lat": 41.8902,
+     "lon": 12.4922,
+     "alt": 250
+    },
+    {
+     "name": "Roman Forum",
+     "lat": 41.8925,
+     "lon": 12.4853,
+     "alt": 250
+    },
+    {
+     "name": "Vittoriano",
+     "lat": 41.8946,
+     "lon": 12.4831,
+     "alt": 250
+    },
+    {
+     "name": "Pantheon",
+     "lat": 41.8986,
+     "lon": 12.4769,
+     "alt": 250
+    },
+    {
+     "name": "Piazza Navona",
+     "lat": 41.8992,
+     "lon": 12.4731,
+     "alt": 250
+    }
+   ]
+  },
+  {
+   "name": "To the Vatican",
+   "subtitle": "Villa Borghese to St. Peter's · 5 gates",
+   "spawn": {
+    "name": "Parioli",
+    "lat": 41.928,
+    "lon": 12.495,
+    "alt": 300
+   },
+   "gates": [
+    {
+     "name": "Villa Borghese",
+     "lat": 41.9142,
+     "lon": 12.4853,
+     "alt": 250
+    },
+    {
+     "name": "Spanish Steps",
+     "lat": 41.906,
+     "lon": 12.4828,
+     "alt": 250
+    },
+    {
+     "name": "Trevi Fountain",
+     "lat": 41.9009,
+     "lon": 12.4833,
+     "alt": 250
+    },
+    {
+     "name": "Castel Sant'Angelo",
+     "lat": 41.9031,
+     "lon": 12.4663,
+     "alt": 250
+    },
+    {
+     "name": "St. Peter's Basilica",
+     "lat": 41.9022,
+     "lon": 12.4539,
+     "alt": 250
+    }
+   ]
+  }
+ ],
+ "launches": [
+  {
+   "name": "Colosseum",
+   "lat": 41.878,
+   "lon": 12.5,
+   "alt": 300
+  },
+  {
+   "name": "Vatican",
+   "lat": 41.89,
+   "lon": 12.44,
+   "alt": 300
+  },
+  {
+   "name": "Villa Borghese",
+   "lat": 41.922,
+   "lon": 12.49,
+   "alt": 300
+  },
+  {
+   "name": "The Tiber",
+   "lat": 41.868,
+   "lon": 12.47,
+   "alt": 260
+  }
+ ]
+}

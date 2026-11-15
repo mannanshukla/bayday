@@ -64,6 +64,12 @@ struct LiveFlightMap:NSViewRepresentable {
   }
   let aircraft=context.coordinator.aircraft
   if abs(c.latitude-aircraft.coordinate.latitude)>0.000001 || abs(c.longitude-aircraft.coordinate.longitude)>0.000001{aircraft.coordinate=c}
+  if context.coordinator.regionID != game.regionID {
+   context.coordinator.regionID=game.regionID;context.coordinator.gateKey = -2;context.coordinator.centre=nil
+   map.removeAnnotations(map.annotations.filter{($0 as? NavigationAnnotation).map{$0.index>=0} ?? false})
+   map.addAnnotations(sights.indices.map{NavigationAnnotation(index:$0,coordinate:CLLocationCoordinate2D(latitude:Double(sights[$0].lat),longitude:Double(sights[$0].lon)))})
+   if !follows{setExtent(map)}
+  }
   let gateKey=game.challenge && !game.routeFinished ? game.routeIndex*1000+game.nextGate:-1
   if context.coordinator.gateKey != gateKey {
    context.coordinator.gateKey=gateKey
@@ -74,7 +80,7 @@ struct LiveFlightMap:NSViewRepresentable {
  }
  class Coordinator:NSObject,MKMapViewDelegate {
   let game:FlightGame
-  var size:CGFloat=0,gateKey = -1
+  var size:CGFloat=0,gateKey = -1,regionID=region.id
   var centre:CLLocationCoordinate2D?
   let aircraft=NavigationAnnotation(index:-1,coordinate:CLLocationCoordinate2D(latitude:region.latitude,longitude:region.longitude))
   init(_ game:FlightGame){self.game=game}

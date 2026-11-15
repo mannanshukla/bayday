@@ -1,0 +1,241 @@
+{
+ "id": "dubai",
+ "name": "Dubai",
+ "country": "United Arab Emirates",
+ "flag": "🇦🇪",
+ "tagline": "The Gulf coast",
+ "latitude": 25.16,
+ "longitude": 55.24,
+ "water": "the Persian Gulf",
+ "music": "desert-city",
+ "localName": "دبي",
+ "greeting": "مرحبا",
+ "sites": [
+  {
+   "name": "Burj Khalifa",
+   "lat": 25.1972,
+   "lon": 55.2744,
+   "group": "DOWNTOWN",
+   "fact": "The tallest building in the world at 828 metres. It opened in 2010.",
+   "hint": "The needle that stands far above everything else downtown.",
+   "source": "https://en.wikipedia.org/wiki/Burj_Khalifa"
+  },
+  {
+   "name": "Palm Jumeirah",
+   "lat": 25.1124,
+   "lon": 55.139,
+   "group": "THE COAST",
+   "fact": "An artificial island in the shape of a palm tree, built in the early 2000s from sand dredged from the sea floor.",
+   "hint": "The palm-shaped island off the coast, south-west of the centre.",
+   "source": "https://en.wikipedia.org/wiki/Palm_Jumeirah"
+  },
+  {
+   "name": "Burj Al Arab",
+   "lat": 25.1412,
+   "lon": 55.1853,
+   "group": "THE COAST",
+   "fact": "A hotel shaped like a sail, 321 metres tall, on its own small island. It opened in 1999.",
+   "hint": "The white sail just off the beach, between the Palm and downtown.",
+   "source": "https://en.wikipedia.org/wiki/Burj_Al_Arab"
+  },
+  {
+   "name": "Dubai Marina",
+   "lat": 25.0805,
+   "lon": 55.1403,
+   "group": "THE COAST",
+   "fact": "A canal city about three kilometres long, cut inland from the sea and lined with residential towers.",
+   "hint": "The winding waterway among towers, south of the Palm.",
+   "source": "https://en.wikipedia.org/wiki/Dubai_Marina"
+  },
+  {
+   "name": "Dubai Frame",
+   "lat": 25.2355,
+   "lon": 55.3003,
+   "group": "OLD DUBAI",
+   "fact": "A 150-metre picture frame with a glass-floored bridge across the top, opened in 2018. One side looks to old Dubai and the other to new.",
+   "hint": "A golden rectangle standing in a park, north-east of downtown.",
+   "source": "https://en.wikipedia.org/wiki/Dubai_Frame"
+  },
+  {
+   "name": "Dubai Creek",
+   "lat": 25.2637,
+   "lon": 55.3075,
+   "group": "OLD DUBAI",
+   "fact": "The saltwater inlet where the city began as a trading and pearl-diving port. Wooden abra boats still ferry people across.",
+   "hint": "The winding inlet through the old town in the north-east.",
+   "source": "https://en.wikipedia.org/wiki/Dubai_Creek"
+  },
+  {
+   "name": "Museum of the Future",
+   "lat": 25.2192,
+   "lon": 55.282,
+   "group": "DOWNTOWN",
+   "fact": "A ring-shaped building covered in Arabic calligraphy, opened in 2022.",
+   "hint": "A silver ring beside the main highway, north of the Burj Khalifa.",
+   "source": "https://en.wikipedia.org/wiki/Museum_of_the_Future"
+  },
+  {
+   "name": "Ain Dubai",
+   "lat": 25.0799,
+   "lon": 55.1237,
+   "group": "THE COAST",
+   "fact": "The tallest observation wheel in the world, about 250 metres high, on Bluewaters Island.",
+   "hint": "The giant wheel on a small island off the Marina.",
+   "source": "https://en.wikipedia.org/wiki/Ain_Dubai"
+  },
+  {
+   "name": "Dubai International Airport",
+   "lat": 25.2532,
+   "lon": 55.3657,
+   "group": "OLD DUBAI",
+   "fact": "One of the busiest airports in the world for international passengers.",
+   "hint": "East of the creek, at the north-east corner of the city.",
+   "source": "https://en.wikipedia.org/wiki/Dubai_International_Airport"
+  },
+  {
+   "name": "The World Islands",
+   "lat": 25.22,
+   "lon": 55.17,
+   "group": "THE COAST",
+   "fact": "About 300 artificial islands arranged as a map of the world, four kilometres off the coast. Most remain undeveloped.",
+   "hint": "A scatter of sandy islands out at sea, north-west of downtown.",
+   "source": "https://en.wikipedia.org/wiki/The_World_(archipelago)"
+  },
+  {
+   "name": "Jumeirah Mosque",
+   "lat": 25.2338,
+   "lon": 55.2655,
+   "group": "OLD DUBAI",
+   "fact": "Built of white stone in 1979 in a style inspired by Fatimid Egypt, and open to visitors of all faiths.",
+   "hint": "Near the coast, north of downtown.",
+   "source": "https://en.wikipedia.org/wiki/Jumeirah_Mosque"
+  },
+  {
+   "name": "Atlantis The Palm",
+   "lat": 25.1304,
+   "lon": 55.1171,
+   "group": "THE COAST",
+   "fact": "The resort at the outer edge of the Palm's crescent, opened in 2008.",
+   "hint": "The pink building with a great arch, at the far tip of the Palm.",
+   "source": "https://en.wikipedia.org/wiki/Atlantis,_The_Palm"
+  }
+ ],
+ "routes": [
+  {
+   "name": "Coast run",
+   "subtitle": "Ain Dubai to the World Islands · 6 gates",
+   "spawn": {
+    "name": "Jebel Ali",
+    "lat": 25.055,
+    "lon": 55.105,
+    "alt": 300
+   },
+   "gates": [
+    {
+     "name": "Ain Dubai",
+     "lat": 25.0799,
+     "lon": 55.1237,
+     "alt": 250
+    },
+    {
+     "name": "Dubai Marina",
+     "lat": 25.0805,
+     "lon": 55.1403,
+     "alt": 250
+    },
+    {
+     "name": "Atlantis The Palm",
+     "lat": 25.1304,
+     "lon": 55.1171,
+     "alt": 250
+    },
+    {
+     "name": "Palm Jumeirah",
+     "lat": 25.1124,
+     "lon": 55.139,
+     "alt": 250
+    },
+    {
+     "name": "Burj Al Arab",
+     "lat": 25.1412,
+     "lon": 55.1853,
+     "alt": 250
+    },
+    {
+     "name": "The World Islands",
+     "lat": 25.22,
+     "lon": 55.17,
+     "alt": 250
+    }
+   ]
+  },
+  {
+   "name": "Downtown and the creek",
+   "subtitle": "Burj Khalifa to Dubai Creek · 5 gates",
+   "spawn": {
+    "name": "Business Bay",
+    "lat": 25.17,
+    "lon": 55.25,
+    "alt": 500
+   },
+   "gates": [
+    {
+     "name": "Burj Khalifa",
+     "lat": 25.1972,
+     "lon": 55.2744,
+     "alt": 250
+    },
+    {
+     "name": "Museum of the Future",
+     "lat": 25.2192,
+     "lon": 55.282,
+     "alt": 250
+    },
+    {
+     "name": "Jumeirah Mosque",
+     "lat": 25.2338,
+     "lon": 55.2655,
+     "alt": 250
+    },
+    {
+     "name": "Dubai Frame",
+     "lat": 25.2355,
+     "lon": 55.3003,
+     "alt": 250
+    },
+    {
+     "name": "Dubai Creek",
+     "lat": 25.2637,
+     "lon": 55.3075,
+     "alt": 250
+    }
+   ]
+  }
+ ],
+ "launches": [
+  {
+   "name": "Downtown",
+   "lat": 25.18,
+   "lon": 55.255,
+   "alt": 550
+  },
+  {
+   "name": "The Palm",
+   "lat": 25.1,
+   "lon": 55.115,
+   "alt": 300
+  },
+  {
+   "name": "Dubai Creek",
+   "lat": 25.245,
+   "lon": 55.3,
+   "alt": 300
+  },
+  {
+   "name": "Dubai Marina",
+   "lat": 25.065,
+   "lon": 55.13,
+   "alt": 400
+  }
+ ]
+}

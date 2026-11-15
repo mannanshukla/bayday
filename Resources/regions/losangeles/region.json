@@ -1,0 +1,239 @@
+{
+ "id": "losangeles",
+ "name": "Los Angeles",
+ "country": "United States",
+ "flag": "🇺🇸",
+ "tagline": "Santa Monica Bay",
+ "latitude": 34.03,
+ "longitude": -118.36,
+ "water": "the Pacific Ocean",
+ "music": "cool-vibes",
+ "sites": [
+  {
+   "name": "Hollywood Sign",
+   "lat": 34.1341,
+   "lon": -118.3215,
+   "group": "HOLLYWOOD",
+   "fact": "Put up in 1923 as an advertisement that read Hollywoodland. The last four letters came down in 1949.",
+   "hint": "White letters on the hillside above Hollywood: climb to reach them.",
+   "source": "https://en.wikipedia.org/wiki/Hollywood_Sign"
+  },
+  {
+   "name": "Griffith Observatory",
+   "lat": 34.1184,
+   "lon": -118.3004,
+   "group": "HOLLYWOOD",
+   "fact": "Opened in 1935 on the slope of Mount Hollywood. Admission has been free ever since.",
+   "hint": "The white domed building on the hill east of the Hollywood Sign.",
+   "source": "https://en.wikipedia.org/wiki/Griffith_Observatory"
+  },
+  {
+   "name": "Santa Monica Pier",
+   "lat": 34.0086,
+   "lon": -118.4986,
+   "group": "THE COAST",
+   "fact": "Opened in 1909. A sign on the pier marks the western end of Route 66.",
+   "hint": "The pier with a Ferris wheel, where the city meets the ocean.",
+   "source": "https://en.wikipedia.org/wiki/Santa_Monica_Pier"
+  },
+  {
+   "name": "Downtown Los Angeles",
+   "lat": 34.05,
+   "lon": -118.26,
+   "group": "DOWNTOWN",
+   "fact": "With its spire, the Wilshire Grand Center reaches 335 metres, the tallest building in Los Angeles.",
+   "hint": "The cluster of towers at the eastern end of the basin.",
+   "source": "https://en.wikipedia.org/wiki/Wilshire_Grand_Center"
+  },
+  {
+   "name": "Dodger Stadium",
+   "lat": 34.0739,
+   "lon": -118.24,
+   "group": "DOWNTOWN",
+   "fact": "Opened in 1962 in Chavez Ravine. It is the third-oldest ballpark in Major League Baseball.",
+   "hint": "In the hills just north of downtown, ringed by car parks.",
+   "source": "https://en.wikipedia.org/wiki/Dodger_Stadium"
+  },
+  {
+   "name": "Los Angeles Airport",
+   "lat": 33.9416,
+   "lon": -118.4085,
+   "group": "THE COAST",
+   "fact": "The Theme Building at its centre, shaped like a landed flying saucer, dates from 1961.",
+   "hint": "Four long runways running to the ocean, south of Venice.",
+   "source": "https://en.wikipedia.org/wiki/Los_Angeles_International_Airport"
+  },
+  {
+   "name": "Venice Beach",
+   "lat": 33.985,
+   "lon": -118.4695,
+   "group": "THE COAST",
+   "fact": "Founded in 1905 as a seaside resort with canals copied from Venice in Italy. A few of the canals remain.",
+   "hint": "The wide beach south of Santa Monica.",
+   "source": "https://en.wikipedia.org/wiki/Venice,_Los_Angeles"
+  },
+  {
+   "name": "Getty Center",
+   "lat": 34.078,
+   "lon": -118.4741,
+   "group": "WESTSIDE",
+   "fact": "An art museum on a hilltop in the Santa Monica Mountains, opened in 1997. Visitors ride up by tram.",
+   "hint": "The pale stone buildings on a ridge above the freeway, north of Santa Monica.",
+   "source": "https://en.wikipedia.org/wiki/Getty_Center"
+  },
+  {
+   "name": "SoFi Stadium",
+   "lat": 33.9535,
+   "lon": -118.3392,
+   "group": "SOUTH",
+   "fact": "Opened in 2020 in Inglewood, home to both the Rams and the Chargers.",
+   "hint": "The huge curved roof east of the airport.",
+   "source": "https://en.wikipedia.org/wiki/SoFi_Stadium"
+  },
+  {
+   "name": "Beverly Hills",
+   "lat": 34.0736,
+   "lon": -118.4004,
+   "group": "WESTSIDE",
+   "fact": "A separate city of under six square miles, surrounded by Los Angeles.",
+   "hint": "Between Hollywood and the coast, at the foot of the hills.",
+   "source": "https://en.wikipedia.org/wiki/Beverly_Hills,_California"
+  },
+  {
+   "name": "La Brea Tar Pits",
+   "lat": 34.0638,
+   "lon": -118.3554,
+   "group": "MID-CITY",
+   "fact": "Natural asphalt has seeped to the surface here for tens of thousands of years, trapping mammoths, sabre-toothed cats and dire wolves.",
+   "hint": "In a park on Wilshire Boulevard, halfway between downtown and the coast.",
+   "source": "https://en.wikipedia.org/wiki/La_Brea_Tar_Pits"
+  },
+  {
+   "name": "Memorial Coliseum",
+   "lat": 34.0141,
+   "lon": -118.2879,
+   "group": "SOUTH",
+   "fact": "Opened in 1923. It hosted the Olympic Games in 1932 and 1984, and will again in 2028.",
+   "hint": "The big oval stadium south-west of downtown.",
+   "source": "https://en.wikipedia.org/wiki/Los_Angeles_Memorial_Coliseum"
+  }
+ ],
+ "routes": [
+  {
+   "name": "Coast to downtown",
+   "subtitle": "Venice to Dodger Stadium · 6 gates",
+   "spawn": {
+    "name": "Marina del Rey",
+    "lat": 33.96,
+    "lon": -118.475,
+    "alt": 300
+   },
+   "gates": [
+    {
+     "name": "Venice Beach",
+     "lat": 33.985,
+     "lon": -118.4695,
+     "alt": 250
+    },
+    {
+     "name": "Santa Monica Pier",
+     "lat": 34.0086,
+     "lon": -118.4986,
+     "alt": 250
+    },
+    {
+     "name": "Beverly Hills",
+     "lat": 34.0736,
+     "lon": -118.4004,
+     "alt": 250
+    },
+    {
+     "name": "La Brea Tar Pits",
+     "lat": 34.0638,
+     "lon": -118.3554,
+     "alt": 250
+    },
+    {
+     "name": "Downtown Los Angeles",
+     "lat": 34.05,
+     "lon": -118.26,
+     "alt": 250
+    },
+    {
+     "name": "Dodger Stadium",
+     "lat": 34.0739,
+     "lon": -118.24,
+     "alt": 250
+    }
+   ]
+  },
+  {
+   "name": "Hills and stadiums",
+   "subtitle": "The Hollywood Sign to SoFi · 5 gates",
+   "spawn": {
+    "name": "West Hollywood",
+    "lat": 34.085,
+    "lon": -118.35,
+    "alt": 500
+   },
+   "gates": [
+    {
+     "name": "Hollywood Sign",
+     "lat": 34.1341,
+     "lon": -118.3215,
+     "alt": 250
+    },
+    {
+     "name": "Griffith Observatory",
+     "lat": 34.1184,
+     "lon": -118.3004,
+     "alt": 250
+    },
+    {
+     "name": "Dodger Stadium",
+     "lat": 34.0739,
+     "lon": -118.24,
+     "alt": 250
+    },
+    {
+     "name": "Memorial Coliseum",
+     "lat": 34.0141,
+     "lon": -118.2879,
+     "alt": 250
+    },
+    {
+     "name": "SoFi Stadium",
+     "lat": 33.9535,
+     "lon": -118.3392,
+     "alt": 250
+    }
+   ]
+  }
+ ],
+ "launches": [
+  {
+   "name": "Santa Monica Bay",
+   "lat": 33.99,
+   "lon": -118.52,
+   "alt": 260
+  },
+  {
+   "name": "Hollywood",
+   "lat": 34.09,
+   "lon": -118.33,
+   "alt": 550
+  },
+  {
+   "name": "Downtown",
+   "lat": 34.03,
+   "lon": -118.25,
+   "alt": 450
+  },
+  {
+   "name": "The airport",
+   "lat": 33.94,
+   "lon": -118.46,
+   "alt": 300
+  }
+ ]
+}
