@@ -18,8 +18,16 @@ struct CockpitView:View {
   // Haze where the far edge of the map meets the sky (see screenHorizon).
   let horizon=screenHorizon(mode:2,roll:game.roll,pitch:game.pitch,aspect:Float(w/max(1,h)),tilt:game.cameraTilt)
   var far=ctx;far.translateBy(x:w/2,y:h/2+CGFloat(horizon.slide)*h);far.rotate(by:.radians(Double(-horizon.angle)))
-  let edge = -CGFloat(horizon.cover)*h/2,span=CGFloat(horizon.cover)*w,mist=Color(red:0.74,green:0.87,blue:0.97)
-  far.fill(Path(CGRect(x:-span/2,y:edge-2,width:span,height:h*0.16)),with:.linearGradient(Gradient(colors:[mist.opacity(Double(min(1,horizon.slide/0.1))),mist.opacity(0)]),startPoint:CGPoint(x:0,y:edge),endPoint:CGPoint(x:0,y:edge+h*0.16)))
+  let edge = -CGFloat(horizon.cover)*h/2
+  // Sky above the edge, paling to the mist colour exactly at it, then mist thinning over the map,
+  // so the edge is a soft horizon and not a line.
+  // As the slide fades with height the mist gets shallower, not fainter, so it always matches
+  // the sky at the edge. The sky is drawn wide enough to cover the window at any bank.
+  let depth=h*0.26*CGFloat(min(1,horizon.slide/0.1)),reach=2*(w+h)
+  if depth>0.5 {
+   far.fill(Path(CGRect(x:-reach,y:edge-reach,width:2*reach,height:reach+1)),with:.linearGradient(Gradient(stops:skyStops),startPoint:CGPoint(x:0,y:edge-h*0.5),endPoint:CGPoint(x:0,y:edge)))
+   far.fill(Path(CGRect(x:-reach,y:edge-1,width:2*reach,height:depth+1)),with:.linearGradient(Gradient(stops:hazeStops),startPoint:CGPoint(x:0,y:edge),endPoint:CGPoint(x:0,y:edge+depth)))
+  }
   // Engine cowl and the propeller's blur ahead of the windscreen.
   let disc=CGRect(x:w*0.5-w*0.21,y:top-h*0.30,width:w*0.42,height:h*0.42)
   if !game.crashing {ctx.fill(Path(ellipseIn:disc),with:.radialGradient(Gradient(colors:[.white.opacity(0.02),.white.opacity(0.09),.white.opacity(0)]),center:CGPoint(x:w/2,y:disc.midY),startRadius:disc.width*0.2,endRadius:disc.width*0.5))}
@@ -123,7 +131,13 @@ struct CockpitView:View {
  }
 }
 
-// Haze where the far edge of the slid-down map meets the sky, in the chase views. Drawn
+// The sky above the far edge of the map and the mist over it. The sky reaches the mist colour
+// exactly at the edge and the mist thins gradually, so the edge reads as a hazy horizon.
+let horizonMist=Color(red:0.80,green:0.89,blue:0.96)
+let skyStops=[Gradient.Stop(color:Color(red:0.30,green:0.55,blue:0.90),location:0),Gradient.Stop(color:Color(red:0.56,green:0.76,blue:0.95),location:0.6),Gradient.Stop(color:horizonMist,location:1)]
+let hazeStops=[(0.0,1.0),(0.12,0.86),(0.3,0.55),(0.55,0.24),(0.8,0.07),(1.0,0.0)].map{Gradient.Stop(color:horizonMist.opacity($0.1),location:$0.0)}
+
+// Sky and haze where the far edge of the slid-down map meets the sky, in the chase views. Drawn
 // every frame from the camera's current tilt so it stays on the map's edge (see screenHorizon).
 struct HorizonHaze:View {
  let game:FlightGame
@@ -132,9 +146,11 @@ struct HorizonHaze:View {
   TimelineView(.animation(minimumInterval:1.0/60,paused:paused)) {timeline in
    Canvas {ctx,size in
     _=timeline.date
-    let slide=CGFloat(screenHorizon(mode:game.cameraMode,roll:0,pitch:0,aspect:1,tilt:game.cameraTilt).slide),mist=Color(red:0.74,green:0.87,blue:0.97),top=size.height*slide-2
-    guard slide>0.001 else{return}
-    ctx.fill(Path(CGRect(x:0,y:top,width:size.width,height:size.height*0.16)),with:.linearGradient(Gradient(colors:[mist.opacity(Double(min(1,slide/0.1))),mist.opacity(0)]),startPoint:CGPoint(x:0,y:top),endPoint:CGPoint(x:0,y:top+size.height*0.16)))
+    // As the slide fades with height the mist gets shallower, not fainter, so it always matches the sky at the edge.
+    let slide=CGFloat(screenHorizon(mode:game.cameraMode,roll:0,pitch:0,aspect:1,tilt:game.cameraTilt).slide),top=size.height*slide,depth=size.height*0.26*min(1,slide/0.1)
+    guard depth>0.5 else{return}
+    ctx.fill(Path(CGRect(x:0,y:0,width:size.width,height:top+1)),with:.linearGradient(Gradient(stops:skyStops),startPoint:CGPoint(x:0,y:top-size.height*0.5),endPoint:CGPoint(x:0,y:top)))
+    ctx.fill(Path(CGRect(x:0,y:top-1,width:size.width,height:depth+1)),with:.linearGradient(Gradient(stops:hazeStops),startPoint:CGPoint(x:0,y:top),endPoint:CGPoint(x:0,y:top+depth)))
    }
   }.ignoresSafeArea().allowsHitTesting(false)
  }
