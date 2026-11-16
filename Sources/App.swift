@@ -14,6 +14,8 @@ struct MetalCanvas:NSViewRepresentable {
     DispatchQueue.main.asyncAfter(deadline:.now()+0.1){do{try renderer.load()
      // `--fly <camera> <turn> <climb> <start>` starts a flight immediately with a steady input (for checking views).
      let args=CommandLine.arguments;if let i=args.firstIndex(of:"--fly") {func value(_ k:Int)->Float {i+k<args.count ? Float(args[i+k]) ?? 0:0};game.launchIndex=clamp(Int(value(4)),0,launches.count-1);game.begin();game.cameraMode=clamp(Int(value(1)),0,2);game.demoInput=SIMD2(value(2),value(3))}
+     // `--city <id>` changes city three seconds after launch (for checking that the menu follows).
+     if let i=args.firstIndex(of:"--city"),i+1<args.count {let id=args[i+1];DispatchQueue.main.asyncAfter(deadline:.now()+3){game.setRegion(id)}}
      // `--panel destinations|record|controls` opens a panel at launch (for checking the interface).
      if let i=args.firstIndex(of:"--panel"),i+1<args.count {switch args[i+1] {case "destinations":game.openDestinations();case "record":game.openPassport();case "controls":game.openHelp();default:break}}
     }catch{game.error=error.localizedDescription}}

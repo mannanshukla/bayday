@@ -76,7 +76,7 @@ Swift, AppKit, SwiftUI, MetalKit, MapKit, AVFoundation and GameController. Apple
 
 `build.sh` builds and ad-hoc signs the app. `test.sh` runs 115 to 143 checks per city of the flight model, crashes, the ceiling, the camera, gates, collection, pause and map transitions, saved settings and aircraft framing; test runs never touch saved progress. `--qa` saves transparent PNGs of the aircraft (four flight attitudes and a close-up) and quits. `swift scripts/make-icon.swift <aircraft-hero.png> build/icon sf`, followed by `iconutil -c icns build/icon/AppIcon.iconset -o Resources/AppIcon.icns`, rebuilds the app icon from that close-up.
 
-`--fly <camera> <turn> <climb> <start>` starts a flight immediately with a steady control input, for checking a view without the keyboard (for example `--fly 2 0.4 0 1` for the cockpit in a right turn over downtown).
+`--fly <camera> <turn> <climb> <start>` starts a flight immediately with a steady control input, for checking a view without the keyboard (for example `--fly 2 0.4 0 1` for the cockpit in a right turn over downtown). `--city <id>` changes city three seconds after launch.
 
 The website is the static page in `docs/`, served by GitHub Pages.
 

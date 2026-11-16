@@ -204,10 +204,10 @@ struct FlightView:View {
   row("City") {Picker("City",selection:Binding(get:{game.regionID},set:game.setRegion)){ForEach(Region.all,id:\.id){Text($0.name).tag($0.id)}}}
   row("Mode") {Picker("Mode",selection:$game.selectedChallenge){Text("Explore").tag(false);Text("Gate challenge").tag(true)}.pickerStyle(.segmented)}
   if game.selectedChallenge {
-   row("Route") {Picker("Route",selection:$game.selectedRouteIndex){ForEach(0..<routes.count,id:\.self){Text(routes[$0].name).tag($0)}}}
+   row("Route") {Picker("Route",selection:$game.selectedRouteIndex){ForEach(0..<routes.count,id:\.self){Text(routes[$0].name).tag($0)}}.id(game.regionID)}
    note(routes[game.selectedRouteIndex].subtitle)
   } else {
-   row("Start") {Picker("Start",selection:$game.launchIndex){ForEach(0..<launches.count,id:\.self){Text(launches[$0].name).tag($0)}}}
+   row("Start") {Picker("Start",selection:$game.launchIndex){ForEach(0..<launches.count,id:\.self){Text(launches[$0].name).tag($0)}}.id(game.regionID)}
   }
   row("Scenery") {Picker("Scenery",selection:Binding(get:{game.preferredScenery},set:game.chooseScenery)){Text("Satellite").tag(2);Text("Apple Maps 3D").tag(1)}.pickerStyle(.segmented)}
   if !game.mapNotice.isEmpty {note(game.mapNotice)}
