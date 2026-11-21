@@ -113,6 +113,11 @@ class FlightGame:ObservableObject {
  var crashTime:Float = -1,crashVelocity=SIMD3<Float>.zero,crashStart=SIMD3<Float>.zero,crashWater=false,tumble=SIMD3<Float>.zero,tumbleRate=SIMD3<Float>.zero
  var shake:Float=0,smokeTimer:Float=0,particles=[Particle](),thud:AVAudioPlayer?
  @Published var crashed=false
+ // Floating on the water after a landing; Boost takes off again.
+ @Published var landed=false
+ // Apple Look Around from the nearest street after a landing (see LookAround.swift).
+ @Published var lookAroundState=LookAroundState.closed
+ var lookAroundTicket=0                     // a search's answer counts only while it is the latest
  @Published var stalling=false
  @Published var atCeiling=false
  @Published var place=PlaceLabel()
@@ -192,7 +197,10 @@ class FlightGame:ObservableObject {
  }
  func key(_ code:UInt16,down:Bool,repeatKey:Bool=false){
   if down{keys.insert(code)}else{keys.remove(code);return};if repeatKey{return}
+  // Look Around takes Escape, P and L while it is open.
+  if lookAroundState != .closed {if [53,35,37].contains(code){closeLookAround()};return}
   switch code {
+  case 37:openLookAround()
   case 53,35:if showMap{closeMap()}else if showHelp||showCredits||showPassport||showDestinations {showHelp=false;showCredits=false;showPassport=false;showDestinations=false}else{togglePause()}
   case 8:cameraMode=(cameraMode+1)%3;notify(["Chase camera","Far camera","Cockpit"][cameraMode])
   case 17:toggleSceneryStyle()
@@ -210,10 +218,15 @@ class FlightGame:ObservableObject {
  }
  var nextTarget:Place? {challenge && nextGate<routes[routeIndex].gates.count ? routes[routeIndex].gates[nextGate]:nil}
  func update(_ dt:Float){
-  guard !paused,terrain != nil else{return};previous=position;time += dt;if !routeFinished {flightElapsed += dt};collideCooldown=max(0,collideCooldown-dt)
+  guard !paused,terrain != nil,lookAroundState == .closed else{return};previous=position;time += dt;if !routeFinished {flightElapsed += dt};collideCooldown=max(0,collideCooldown-dt)
   shake=max(0,shake-dt*1.7);updateParticles(dt)
   if titleCard && time>4.5 {titleCard=false}
-  if crashing {updateCrash(dt)} else {
+  if crashing {updateCrash(dt)} else if landed {
+   var turn:Float=(keys.contains(2)||keys.contains(124) ? 1:0)-(keys.contains(0)||keys.contains(123) ? 1:0)
+   var boosting=shift||keys.contains(14)
+   if let pad=GCController.controllers().first?.extendedGamepad {turn += pad.leftThumbstick.xAxis.value;boosting = boosting || pad.rightTrigger.value>0.3}
+   taxi(dt,turn:clamp(turn+demoInput.x,-1,1),boosting:boosting)
+  } else {
    var turn:Float=(keys.contains(2)||keys.contains(124) ? 1:0)-(keys.contains(0)||keys.contains(123) ? 1:0)
    var climb:Float=(keys.contains(1)||keys.contains(125) ? 1:0)-(keys.contains(13)||keys.contains(126) ? 1:0)
    var boosting=shift||keys.contains(14),braking=keys.contains(49)||keys.contains(12)

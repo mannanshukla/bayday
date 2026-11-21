@@ -18,6 +18,10 @@ enum Aero {
  static let clearance:Float=3                 // the floats sit about 2 m below the aircraft origin
  static let crashDuration:Float=2.6
  static let ceiling:Float=2400               // service ceiling above sea level
+ // Landing: the floats settle on water touched gently, slowly and wings level (brake first).
+ static let landingSpeed:Float=75
+ static let landingClosing:Float=9
+ static let liftoffSpeed:Float=60
 }
 struct Particle {
  var position:SIMD3<Float>,velocity:SIMD3<Float>
@@ -34,7 +38,7 @@ extension FlightGame {
  func resetDynamics(){
   velocityDir=forward;rollRate=0;pitchRate=0;loadFactor=1;stallAmount=0;thrust=Aero.cruiseThrust
   crashTime = -1;crashVelocity = .zero;tumble = .zero;tumbleRate = .zero;shake=0;smokeTimer=0;particles.removeAll()
-  if crashed{crashed=false};if stalling{stalling=false};if atCeiling{atCeiling=false}
+  if crashed{crashed=false};if stalling{stalling=false};if atCeiling{atCeiling=false};if landed{landed=false}
  }
 
  // MARK: Flight
@@ -109,6 +113,8 @@ extension FlightGame {
  func impact(_ c:Contact){
   let v=velocityDir*speed,closing = -dot(v,c.normal)
   position += c.normal*(c.depth+0.3)
+  // A gentle, slow, wings-level touch on water is a landing.
+  if c.water && closing<Aero.landingClosing && speed<Aero.landingSpeed && abs(roll)<0.35 {land();return}
   // A shallow touch skips off the surface; the floats make water more forgiving.
   let limit=Aero.cruise*(c.water ? 0.23:0.18)
   if closing>limit || (!c.water && speed<Aero.stall) {crash(v,c,closing)}else{skim(v,c,max(0,closing))}
@@ -173,6 +179,43 @@ extension FlightGame {
   let debris=particles;resetDynamics();particles=debris;collideCooldown=1.5
   mapCameraPosition=SIMD3(repeating:.infinity)
  }
+
+ // MARK: Landing
+ func land(){
+  landed=true;pitch=0;roll=0;rollRate=0;pitchRate=0;stallAmount=0;loadFactor=1
+  forward=SIMD3(sin(yaw),0,-cos(yaw));velocityDir=forward
+  position.y=(terrain?.surface(position) ?? 0)+Aero.clearance
+  shake=max(shake,0.25)
+  emit(2,count:18,at:position-SIMD3(0,2,0),velocity:forward*speed*0.3+SIMD3(0,6,0),spread:10,life:1,size:0.7)
+  playThud(0.2)
+ }
+ // On the water: the floats slow the aircraft to a stop, it turns on the spot, and Boost
+ // runs it up to flying speed. The shore stops it.
+ func taxi(_ dt:Float,turn:Float,boosting:Bool){
+  turnInput += (turn-turnInput)*(1-exp(-dt*7));pitchInput=0
+  yaw += turnInput*0.55*dt
+  let boostActive=boosting && boost>0.02
+  boost=clamp(boost+(boostActive ? -0.12:0.2)*dt,0,1)
+  speed=max(0,speed+(boostActive ? 16:-max(3,speed*0.6))*dt)
+  thrust=boostActive ? Aero.boostThrust:Aero.brakeThrust
+  forward=SIMD3(sin(yaw),0,-cos(yaw));velocityDir=forward
+  roll += (turnInput * -0.05-roll)*(1-exp(-dt*4))
+  pitch += (0.06*clamp(speed/Aero.liftoffSpeed,0,1)-pitch)*(1-exp(-dt*3))
+  let next=position+forward*speed*dt
+  if let terrain,terrain.isWater(next.x,next.z) {position=next;position.y=terrain.surface(next)+Aero.clearance}
+  else{
+   if speed>2 && collideCooldown==0 {notify("The shore is in the way: turn around");collideCooldown=2.5}
+   speed=0
+  }
+  smokeTimer += dt
+  if speed>8 && smokeTimer>0.07 {smokeTimer=0;emit(2,count:2,at:position-SIMD3(0,2,0),velocity:SIMD3(0,3+speed*0.05,0),spread:4+speed*0.05,life:0.7,size:0.5)}
+  // Only a boosted run lifts off, so a fast landing still settles onto the water.
+  if boostActive && speed>=Aero.liftoffSpeed {
+   landed=false;pitch=0.14;velocityDir=normalize(forward+SIMD3(0,0.1,0));position.y += 1;thrust=Aero.boostThrust;collideCooldown=1.5;notify("Airborne")
+  }
+ }
+ // Close enough to stopped to step out and look around.
+ var canLookAround:Bool {landed && speed<6 && !paused && lookAroundState == .closed}
 
  // MARK: Effects
  func emit(_ kind:Int,count:Int,at p:SIMD3<Float>,velocity:SIMD3<Float>,spread:Float,life:Float,size:Float){

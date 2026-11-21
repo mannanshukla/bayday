@@ -151,6 +151,19 @@ import MetalKit
    f=pilot(water+SIMD3(0,Aero.clearance+3,0));aim(f,yaw:0,pitch:-0.21);run(f,2){f.crashed || !f.particles.isEmpty}
    check(!f.crashed && f.velocityDir.y>0 && f.particles.contains{$0.kind==2},"The floats skip off the water with spray at that angle (crashed \(f.crashed), water \(scan.isWater(f.position.x,f.position.z)), y \(f.position.y))")
    f=pilot(water+SIMD3(0,80,0));aim(f,yaw:0,pitch:-0.9);run(f,3){f.crashed};check(f.crashed && f.crashWater,"A steep dive into the water is a splashdown")
+   // Landing: airbrake out, nose held a little down, onto open water.
+   f=pilot(water+SIMD3(0,Aero.clearance+9,0));aim(f,yaw:0,pitch:-0.06);f.speed=55;f.key(49,down:true);f.demoInput=SIMD2(0,-0.15);run(f,4){f.landed}
+   check(f.landed && !f.crashed,"A slow, gentle touch on the water with the airbrake out is a landing")
+   f.key(49,down:false);f.demoInput = .zero;run(f,6)
+   check(f.speed<1 && f.canLookAround && abs(f.position.y-terrain.surface(f.position)-Aero.clearance)<0.5,"The floats bring it to a stop on the water, ready to look around")
+   let landedYaw=f.yaw;f.demoInput=SIMD2(1,0);run(f,1);f.demoInput = .zero
+   check(abs(f.yaw-landedYaw)>0.2,"It turns on the spot on the water")
+   f.shift=true;run(f,10){!f.landed};f.shift=false;run(f,2)
+   check(!f.landed && !f.crashed && f.position.y>terrain.surface(f.position)+Aero.clearance+5,"Boost runs it up to flying speed and it takes off")
+   f=pilot(water+SIMD3(0,Aero.clearance+9,0));aim(f,yaw:0,pitch:-0.06);f.demoInput=SIMD2(0,-0.15);run(f,4){f.landed || !f.toast.isEmpty}
+   check(!f.landed,"At cruise speed the floats skip instead of landing")
+   f=pilot(water+SIMD3(0,Aero.clearance,0));f.speed=70;f.land();run(f,5)
+   check(f.landed && f.speed<5,"A fast landing settles instead of taking off again")
   }
   f.reset();check(!f.crashed && !f.crashing && f.particles.isEmpty && f.tumble == .zero,"Restarting clears a crash in progress")
   f=pilot(land+SIMD3(0,ground+40,0));aim(f,yaw:0,pitch:-1);f.speed=Aero.boostSpeed;f.thrust=Aero.boostThrust;for _ in 0..<40{f.update(0.05);if f.crashed{break}}

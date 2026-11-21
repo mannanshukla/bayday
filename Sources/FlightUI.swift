@@ -2,7 +2,7 @@ import SwiftUI
 
 private let controlKeys:[(action:String,keys:String)] = [
  ("Steer","← →  /  A D"),("Climb","↓  /  S"),("Dive","↑  /  W"),("Boost","Shift  /  E"),("Brake","Space  /  Q"),
- ("Camera: chase, far, cockpit","C"),("Scenery","T"),("Map","M"),("Flight record","J"),("Hide interface","H"),
+ ("Look around after landing","L"),("Camera: chase, far, cockpit","C"),("Scenery","T"),("Map","M"),("Flight record","J"),("Hide interface","H"),
  ("Music on / off","K"),("Next track","N"),("Restart flight","R"),("Pause","P  /  Esc"),("Resume or start","Return")
 ]
 
@@ -41,7 +41,8 @@ struct FlightView:View {
     if game.showDestinations {DestinationsView(game:game,available:g.size)}
     if game.showHelp {controlsPanel}
     if game.showCredits {creditsPanel}
-   }
+    LookAroundOverlay(game:game)
+   }.animation(.easeInOut(duration:0.25),value:game.lookAroundState)
   }.frame(minWidth:900,minHeight:620)
  }
 
@@ -68,6 +69,10 @@ struct FlightView:View {
   VStack(spacing:10) {
    HStack(alignment:.top) {progressChip;Spacer(minLength:8);placeChip;Spacer(minLength:8);targetChip}.allowsHitTesting(false)
    status.allowsHitTesting(false)
+   if game.landed {
+    Button(action:game.openLookAround){Label(game.canLookAround ? "Look around":"Slowing down…",systemImage:"binoculars.fill")}
+     .buttonStyle(AeroButtonStyle(compact:true)).disabled(!game.canLookAround).help("Look around from the nearest street (L)").transition(.opacity)
+   }
    if game.titleCard {TitleCard(city:region).padding(.top,20).allowsHitTesting(false).transition(.scale(scale:0.92).combined(with:.opacity))}
    Spacer(minLength:0)
    if let i=game.activeDiscovery {
@@ -88,6 +93,7 @@ struct FlightView:View {
   .animation(.snappy(duration:0.25),value:game.crashed)
   .animation(.snappy(duration:0.25),value:game.stalling)
   .animation(.snappy(duration:0.25),value:game.atCeiling)
+  .animation(.snappy(duration:0.25),value:game.landed)
   .animation(.easeInOut(duration:0.5),value:game.titleCard)
   .animation(.snappy(duration:0.25),value:game.toast)
   .animation(.easeInOut(duration:0.3),value:game.place)
@@ -135,6 +141,8 @@ struct FlightView:View {
  @ViewBuilder private var status:some View {
   if game.crashed {
    statusPill("Crashed · restarting",symbol:"exclamationmark.triangle.fill",tint:.red)
+  } else if game.landed {
+   statusPill("On the water · hold Shift to take off",symbol:"water.waves",tint:aeroBlue)
   } else if game.stalling {
    statusPill("Stall · lower the nose",symbol:"arrow.down.to.line",tint:.orange)
   } else if game.atCeiling {

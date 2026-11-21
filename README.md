@@ -34,6 +34,7 @@ Open **build/Bay Day.app**, choose a start, and press **Start flight** (or Retur
 | Steer | Arrow keys / A D |
 | Climb / dive | Down or S / Up or W |
 | Boost / brake | Shift or E / Space or Q |
+| Look around after landing | L |
 | Camera (chase, far, cockpit) | C |
 | Map / flight record | M / J |
 | Hide interface | H |
@@ -41,6 +42,10 @@ Open **build/Bay Day.app**, choose a start, and press **Start flight** (or Retur
 | Restart / pause | R / P or Escape |
 
 A gamepad's left stick steers; the right trigger boosts and the left trigger brakes. Losing window focus pauses the game.
+
+## Landing and Look Around
+
+Brake, then touch the water gently with the wings level, and the floats land the aircraft instead of bouncing off. On the water it slows to a stop, turns on the spot and stops at the shore; hold Boost to take off again. Once it has stopped, press L (or **Look around**) to see Apple's Look Around from the nearest street within 500 m (`Sources/LookAround.swift`). Look Around only answers near a street, so the search widens in rings around the aircraft. Cities without Look Around coverage say so.
 
 ## Flight and crash model
 
