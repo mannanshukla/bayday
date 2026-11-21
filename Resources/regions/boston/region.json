@@ -1,0 +1,239 @@
+{
+ "id": "boston",
+ "name": "Boston",
+ "country": "United States",
+ "flag": "🇺🇸",
+ "tagline": "Boston Harbor",
+ "latitude": 42.35,
+ "longitude": -71.07,
+ "water": "Boston Harbor",
+ "music": "backbay-lounge",
+ "sites": [
+  {
+   "name": "Fenway Park",
+   "lat": 42.3464,
+   "lon": -71.0978,
+   "group": "FENWAY",
+   "fact": "Home of the Red Sox since 1912, the oldest ballpark in the major leagues. Its left-field wall, the Green Monster, is 37 feet high.",
+   "hint": "A ballpark tucked among the streets west of Back Bay.",
+   "source": "https://en.wikipedia.org/wiki/Fenway_Park"
+  },
+  {
+   "name": "Massachusetts State House",
+   "lat": 42.3582,
+   "lon": -71.0637,
+   "group": "BEACON HILL",
+   "fact": "Designed by Charles Bulfinch and completed in 1798. Paul Revere's company covered its dome in copper; it was first gilded in 1874.",
+   "hint": "The gold dome on Beacon Hill, above the Common.",
+   "source": "https://en.wikipedia.org/wiki/Massachusetts_State_House"
+  },
+  {
+   "name": "Boston Common",
+   "lat": 42.355,
+   "lon": -71.0656,
+   "group": "BEACON HILL",
+   "fact": "Set aside in 1634, it is the oldest public park in the United States. Cows grazed on it until 1830.",
+   "hint": "The open green in the middle of downtown, below the gold dome.",
+   "source": "https://en.wikipedia.org/wiki/Boston_Common"
+  },
+  {
+   "name": "USS Constitution",
+   "lat": 42.3725,
+   "lon": -71.0566,
+   "group": "CHARLESTOWN",
+   "fact": "Launched in 1797 and nicknamed Old Ironsides in the War of 1812. It is the oldest commissioned warship still afloat in the world.",
+   "hint": "At the old navy yard in Charlestown, across the harbor from the North End.",
+   "source": "https://en.wikipedia.org/wiki/USS_Constitution"
+  },
+  {
+   "name": "Bunker Hill Monument",
+   "lat": 42.3763,
+   "lon": -71.0608,
+   "group": "CHARLESTOWN",
+   "fact": "A 221-foot granite obelisk, dedicated in 1843. It marks the battle of June 1775, which was fought mostly on Breed's Hill, where the monument stands.",
+   "hint": "The tall obelisk on the hill in Charlestown.",
+   "source": "https://en.wikipedia.org/wiki/Bunker_Hill_Monument"
+  },
+  {
+   "name": "Zakim Bridge",
+   "lat": 42.3689,
+   "lon": -71.0633,
+   "group": "THE RIVER",
+   "fact": "A cable-stayed bridge carrying ten lanes of highway over the Charles River. It opened in 2003 as part of the Big Dig.",
+   "hint": "The white cable fans over the river, north of downtown.",
+   "source": "https://en.wikipedia.org/wiki/Leonard_P._Zakim_Bunker_Hill_Memorial_Bridge"
+  },
+  {
+   "name": "Harvard Yard",
+   "lat": 42.3745,
+   "lon": -71.1172,
+   "group": "CAMBRIDGE",
+   "fact": "Harvard was founded in 1636, which makes it the oldest college in the United States. The Yard is its original campus.",
+   "hint": "Red-brick buildings around a leafy yard in Cambridge, north of the river bend.",
+   "source": "https://en.wikipedia.org/wiki/Harvard_Yard"
+  },
+  {
+   "name": "MIT",
+   "lat": 42.3597,
+   "lon": -71.0919,
+   "group": "CAMBRIDGE",
+   "fact": "MIT moved across the river from Boston in 1916. As pranks, students have put a police car and a fire truck on top of its Great Dome.",
+   "hint": "The domed campus on the Cambridge bank, across the river from Back Bay.",
+   "source": "https://en.wikipedia.org/wiki/Massachusetts_Institute_of_Technology"
+  },
+  {
+   "name": "Prudential Tower",
+   "lat": 42.3472,
+   "lon": -71.0825,
+   "group": "BACK BAY",
+   "fact": "Completed in 1964 and 228 metres tall. It was the tallest building in Boston until the Hancock Tower went up nearby in 1976.",
+   "hint": "The tall square tower in Back Bay, with an antenna on top.",
+   "source": "https://en.wikipedia.org/wiki/Prudential_Tower"
+  },
+  {
+   "name": "Logan Airport",
+   "lat": 42.3631,
+   "lon": -71.0064,
+   "group": "THE HARBOR",
+   "fact": "Opened in 1923 and built out over the harbor on filled land. Planes land over the water, close to downtown.",
+   "hint": "The runways across the harbor from downtown, in East Boston.",
+   "source": "https://en.wikipedia.org/wiki/Logan_International_Airport"
+  },
+  {
+   "name": "Old North Church",
+   "lat": 42.3664,
+   "lon": -71.0544,
+   "group": "THE NORTH END",
+   "fact": "Built in 1723, the oldest church building standing in Boston. Two lanterns hung in its steeple on 18 April 1775 warned that British troops were coming by water.",
+   "hint": "The white steeple in the North End, near the harbor.",
+   "source": "https://en.wikipedia.org/wiki/Old_North_Church"
+  },
+  {
+   "name": "Castle Island",
+   "lat": 42.3378,
+   "lon": -71.0124,
+   "group": "THE HARBOR",
+   "fact": "A fort has stood here since 1634. Edgar Allan Poe served at Fort Independence as a young soldier in 1827.",
+   "hint": "The star-shaped granite fort at the tip of South Boston.",
+   "source": "https://en.wikipedia.org/wiki/Castle_Island_(Massachusetts)"
+  }
+ ],
+ "routes": [
+  {
+   "name": "Freedom Trail",
+   "subtitle": "Boston Common to Charlestown · 6 gates",
+   "spawn": {
+    "name": "South End",
+    "lat": 42.338,
+    "lon": -71.072,
+    "alt": 300
+   },
+   "gates": [
+    {
+     "name": "Boston Common",
+     "lat": 42.355,
+     "lon": -71.0656,
+     "alt": 250
+    },
+    {
+     "name": "Massachusetts State House",
+     "lat": 42.3582,
+     "lon": -71.0637,
+     "alt": 250
+    },
+    {
+     "name": "Old North Church",
+     "lat": 42.3664,
+     "lon": -71.0544,
+     "alt": 250
+    },
+    {
+     "name": "Zakim Bridge",
+     "lat": 42.3689,
+     "lon": -71.0633,
+     "alt": 250
+    },
+    {
+     "name": "USS Constitution",
+     "lat": 42.3725,
+     "lon": -71.0566,
+     "alt": 250
+    },
+    {
+     "name": "Bunker Hill Monument",
+     "lat": 42.3763,
+     "lon": -71.0608,
+     "alt": 250
+    }
+   ]
+  },
+  {
+   "name": "Up the Charles",
+   "subtitle": "Castle Island to Harvard · 5 gates",
+   "spawn": {
+    "name": "Boston Harbor",
+    "lat": 42.33,
+    "lon": -70.985,
+    "alt": 280
+   },
+   "gates": [
+    {
+     "name": "Castle Island",
+     "lat": 42.3378,
+     "lon": -71.0124,
+     "alt": 250
+    },
+    {
+     "name": "Prudential Tower",
+     "lat": 42.3472,
+     "lon": -71.0825,
+     "alt": 250
+    },
+    {
+     "name": "Fenway Park",
+     "lat": 42.3464,
+     "lon": -71.0978,
+     "alt": 250
+    },
+    {
+     "name": "MIT",
+     "lat": 42.3597,
+     "lon": -71.0919,
+     "alt": 250
+    },
+    {
+     "name": "Harvard Yard",
+     "lat": 42.3745,
+     "lon": -71.1172,
+     "alt": 250
+    }
+   ]
+  }
+ ],
+ "launches": [
+  {
+   "name": "Boston Harbor",
+   "lat": 42.34,
+   "lon": -70.99,
+   "alt": 260
+  },
+  {
+   "name": "Back Bay",
+   "lat": 42.338,
+   "lon": -71.095,
+   "alt": 350
+  },
+  {
+   "name": "Cambridge",
+   "lat": 42.385,
+   "lon": -71.135,
+   "alt": 350
+  },
+  {
+   "name": "Logan",
+   "lat": 42.375,
+   "lon": -70.995,
+   "alt": 300
+  }
+ ]
+}

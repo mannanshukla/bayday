@@ -31,7 +31,7 @@ struct Region {
  }
 
  // San Francisco and New York are written in code; the other cities are data files.
- static let dataOrder=["london","paris","tokyo","sydney","rome","hongkong","rio","dubai","losangeles","chicago"]
+ static let dataOrder=["london","paris","tokyo","sydney","rome","hongkong","rio","dubai","losangeles","chicago","boston"]
  static let all:[Region]=[sanFrancisco,newYork]+dataOrder.compactMap(load)
  static func named(_ id:String?)->Region? {all.first{$0.id==id}}
  // Tests and tools pick the starting region with the BAYDAY_REGION environment variable;

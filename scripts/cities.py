@@ -189,6 +189,24 @@ CITIES = [
   routes=[("Lakefront","Soldier Field to Wrigley Field · 6 gates",("Burnham Harbor",41.8350,-87.6000,300),["Soldier Field","Adler Planetarium","Navy Pier","875 North Michigan Avenue","Lincoln Park Zoo","Wrigley Field"]),
           ("The Loop and west","Cloud Gate to Midway · 5 gates",("Grant Park",41.8650,-87.6000,450),["Cloud Gate","Willis Tower","Wolf Point","United Center","Midway Airport"])],
   launches=[("Lake Michigan",41.870,-87.590,260),("The Loop",41.858,-87.630,550),("North Side",41.930,-87.640,350),("Midway",41.800,-87.740,350)]),
+ dict(id="boston", name="Boston", country="United States", flag="🇺🇸", greeting=None, tagline="Boston Harbor", latitude=42.35, longitude=-71.07, water="Boston Harbor", music="backbay-lounge",
+  sites=[
+   ("Fenway Park",42.3464,-71.0978,"FENWAY","Home of the Red Sox since 1912, the oldest ballpark in the major leagues. Its left-field wall, the Green Monster, is 37 feet high.","A ballpark tucked among the streets west of Back Bay.","Fenway_Park"),
+   ("Massachusetts State House",42.3582,-71.0637,"BEACON HILL","Designed by Charles Bulfinch and completed in 1798. Paul Revere's company covered its dome in copper; it was first gilded in 1874.","The gold dome on Beacon Hill, above the Common.","Massachusetts_State_House"),
+   ("Boston Common",42.3550,-71.0656,"BEACON HILL","Set aside in 1634, it is the oldest public park in the United States. Cows grazed on it until 1830.","The open green in the middle of downtown, below the gold dome.","Boston_Common"),
+   ("USS Constitution",42.3725,-71.0566,"CHARLESTOWN","Launched in 1797 and nicknamed Old Ironsides in the War of 1812. It is the oldest commissioned warship still afloat in the world.","At the old navy yard in Charlestown, across the harbor from the North End.","USS_Constitution"),
+   ("Bunker Hill Monument",42.3763,-71.0608,"CHARLESTOWN","A 221-foot granite obelisk, dedicated in 1843. It marks the battle of June 1775, which was fought mostly on Breed's Hill, where the monument stands.","The tall obelisk on the hill in Charlestown.","Bunker_Hill_Monument"),
+   ("Zakim Bridge",42.3689,-71.0633,"THE RIVER","A cable-stayed bridge carrying ten lanes of highway over the Charles River. It opened in 2003 as part of the Big Dig.","The white cable fans over the river, north of downtown.","Leonard_P._Zakim_Bunker_Hill_Memorial_Bridge"),
+   ("Harvard Yard",42.3745,-71.1172,"CAMBRIDGE","Harvard was founded in 1636, which makes it the oldest college in the United States. The Yard is its original campus.","Red-brick buildings around a leafy yard in Cambridge, north of the river bend.","Harvard_Yard"),
+   ("MIT",42.3597,-71.0919,"CAMBRIDGE","MIT moved across the river from Boston in 1916. As pranks, students have put a police car and a fire truck on top of its Great Dome.","The domed campus on the Cambridge bank, across the river from Back Bay.","Massachusetts_Institute_of_Technology"),
+   ("Prudential Tower",42.3472,-71.0825,"BACK BAY","Completed in 1964 and 228 metres tall. It was the tallest building in Boston until the Hancock Tower went up nearby in 1976.","The tall square tower in Back Bay, with an antenna on top.","Prudential_Tower"),
+   ("Logan Airport",42.3631,-71.0064,"THE HARBOR","Opened in 1923 and built out over the harbor on filled land. Planes land over the water, close to downtown.","The runways across the harbor from downtown, in East Boston.","Logan_International_Airport"),
+   ("Old North Church",42.3664,-71.0544,"THE NORTH END","Built in 1723, the oldest church building standing in Boston. Two lanterns hung in its steeple on 18 April 1775 warned that British troops were coming by water.","The white steeple in the North End, near the harbor.","Old_North_Church"),
+   ("Castle Island",42.3378,-71.0124,"THE HARBOR","A fort has stood here since 1634. Edgar Allan Poe served at Fort Independence as a young soldier in 1827.","The star-shaped granite fort at the tip of South Boston.","Castle_Island_(Massachusetts)"),
+  ],
+  routes=[("Freedom Trail","Boston Common to Charlestown · 6 gates",("South End",42.3380,-71.0720,300),["Boston Common","Massachusetts State House","Old North Church","Zakim Bridge","USS Constitution","Bunker Hill Monument"]),
+          ("Up the Charles","Castle Island to Harvard · 5 gates",("Boston Harbor",42.3300,-70.9850,280),["Castle Island","Prudential Tower","Fenway Park","MIT","Harvard Yard"])],
+  launches=[("Boston Harbor",42.340,-70.990,260),("Back Bay",42.338,-71.095,350),("Cambridge",42.385,-71.135,350),("Logan",42.375,-70.995,300)]),
 ]
 
 root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "Resources", "regions")

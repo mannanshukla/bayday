@@ -8,12 +8,12 @@ import MetalKit
   let p=perspective(.pi/3,1.6),near=p*SIMD4<Float>(0,0,-1,1),far=p*SIMD4<Float>(0,0,-100000,1)
   check(abs(near.z/near.w-1)<0.000001 && far.z/far.w>0 && far.z/far.w<0.00002,"Reversed-Z near/far precision")
   let g=FlightGame(testing:true);check(g.scenery==2 && g.preferredScenery==2,"Satellite is the first-launch default");g.terrain=try TerrainData(URL(fileURLWithPath:CommandLine.arguments[1]));g.ready=true;g.position=SIMD3(0,1000,0);g.previous=g.position;g.resume();g.key(125,down:true)
-  // A flat piece of land and, where the city has any, a stretch of open water, for the checks below.
+  // A flat piece of land (not falling away to the north, where the bounce test flies) and, where the city has any, a stretch of open water, for the checks below.
   var land=SIMD3<Float>.zero,water=SIMD3<Float>.zero,foundLand=false,foundWater=false
   let scan=g.terrain!
   for i in stride(from:-18000,through:18000,by:500){for j in stride(from:-18000,through:18000,by:500){let x=Float(i),z=Float(j)
    let around=[(x,z),(x+300,z),(x-300,z),(x,z+300),(x,z-300),(x,z-900),(x,z-1800)],hs=around.map{scan.height($0.0,$0.1)},wet=around.map{scan.isWater($0.0,$0.1)}
-   if !foundLand && !wet.contains(true) && hs.min()!>3 && hs.max()!-hs.min()!<25 {land=SIMD3(x,0,z);foundLand=true}
+   if !foundLand && !wet.contains(true) && hs.min()!>3 && hs.max()!-hs.min()!<25 && hs[0]-hs[4]<3 {land=SIMD3(x,0,z);foundLand=true}
    if !foundWater && !wet.contains(false) && hs.max()!-hs.min()!<1 {water=SIMD3(x,max(0,hs[0]),z);foundWater=true}
   }}
   check(foundLand,"The city has flat land to test on"+(foundWater ? " and open water":" (no open water wide enough to test)"))
@@ -218,7 +218,7 @@ import MetalKit
   check(FlightGame(testing:true).place==PlaceLabel(),"Tests never contact the geocoder")
   reply=nil
   // Cities: one app, separate progress in each, and a reset.
-  check(Region.all.count==12 && Set(Region.all.map(\.id)).count==12 && Region.all.allSatisfy{$0.sites.count>=12 && !$0.routes.isEmpty && !$0.launches.isEmpty},"All twelve cities load with places, routes and starts")
+  check(Region.all.count==13 && Set(Region.all.map(\.id)).count==13 && Region.all.allSatisfy{$0.sites.count>=12 && !$0.routes.isEmpty && !$0.launches.isEmpty},"All thirteen cities load with places, routes and starts")
   let tunes=URL(fileURLWithPath:CommandLine.arguments[1]).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("music")
   check(Region.all.allSatisfy{c in c.music.map{name in ["m4a","mp3"].contains{FileManager.default.fileExists(atPath:tunes.appendingPathComponent(name+"."+$0).path)}} ?? false},"Every city has its signature tune on disk")
   let travel=UserDefaults(suiteName:"local.bayday.tests.travel."+UUID().uuidString)!,home=region.id,away=Region.all.first{$0.id != home}!
